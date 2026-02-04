@@ -28,7 +28,10 @@
 
 ## 📷 스크린샷
 
-(여기에 스크린샷 추가)
+<img width="1072" height="946" alt="image" src="https://github.com/user-attachments/assets/7d6d69e3-806b-458b-b466-d7ce211c4f87" />
+<img width="1084" height="843" alt="image" src="https://github.com/user-attachments/assets/f804719e-b731-4422-8522-c76ff33642f5" />
+
+
 
 ## 📄 라이선스
 
