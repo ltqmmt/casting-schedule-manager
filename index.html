@@ -873,6 +873,10 @@
           throw new Error("응답 형식이 올바르지 않습니다.");
         }
 
+        if (data.stop_reason === "max_tokens") {
+          throw new Error("응답이 너무 길어 중간에 잘렸습니다. 이미지를 분할하여 업로드해주세요.");
+        }
+
         const text = data.content.map(item => item.text || "").join("\n").trim();
         const cleanText = text.replace(/```json|```/g, "").trim();
         tempCastingData = JSON.parse(cleanText);
