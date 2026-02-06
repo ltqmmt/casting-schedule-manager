@@ -90,27 +90,32 @@
         <div id="showsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"></div>
 
         <!-- 빈 상태 -->
-        <div id="emptyState" class="text-center py-16">
-          <svg class="w-24 h-24 mx-auto mb-4 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-          <h3 class="text-xl font-semibold text-zinc-400 mb-2">저장된 공연이 없습니다</h3>
-          <p class="text-zinc-500 mb-6">캐스팅 보드를 업로드하여 첫 공연을 추가하세요</p>
-          <button onclick="showUploadSection()"
-            class="px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded-lg transition-all">
-            + 새 공연 추가
+        <div id="emptyState" class="text-center py-20">
+          <div class="mb-12">
+            <div class="w-32 h-32 mx-auto mb-8 bg-zinc-800/50 rounded-3xl flex items-center justify-center border border-zinc-700/50">
+              <svg class="w-16 h-16 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-3">등록된 공연이 없습니다</h3>
+            <p class="text-zinc-500 text-base">첫 번째 캐스팅 스케줄을 추가해보세요!</p>
+          </div>
+          <button onclick="showUploadSection()" class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-105">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            원하는 공연이 없나요? 직접 추가하기
           </button>
         </div>
 
         <!-- 하단 버튼 (공연이 있을 때만 표시) -->
-        <div id="addShowButton" class="hidden flex justify-center gap-4 mt-6">
-          <button onclick="showUploadSection()"
-            class="px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded-lg transition-all inline-flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        <div id="addShowButton" class="hidden flex justify-center mt-6">
+          <button onclick="showUploadSection()" class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-105">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            새 공연 추가
+            원하는 공연이 없나요? 직접 추가하기
           </button>
         </div>
       </div>
@@ -381,7 +386,7 @@
               </button>
             </div>
 
-            <span id="filterHint" class="text-zinc-500 text-sm">배우를 선택하면 해당 출연 회차만 표시됩니다 (중복 선택 가능)</span>
+            <span id="filterHint" class="text-zinc-500 text-sm">배우를 선택하면 해당 출연 회차만 표시됩니다 (여러 명 선택 시 모두 출연한 회차만 표시)</span>
           </div>
 
           <div id="actorButtons" class="mt-4 flex flex-wrap gap-2"></div>
@@ -1182,9 +1187,9 @@
         // 선택된 배우들 표시
         selectedActorsText.textContent = selectedActors.join(', ');
 
-        // 총 출연 횟수 계산
+        // 총 출연 횟수 계산 (모든 배우가 포함된 경우만)
         const totalCount = castingData.schedule.filter(show => {
-          return selectedActors.some(actor => show.cast.includes(actor));
+          return selectedActors.every(actor => show.cast.includes(actor));
         }).length;
 
         showInfo.classList.remove('hidden');
@@ -1200,10 +1205,10 @@
     }
 
     function renderTable() {
-      // 🆕 선택된 배우가 포함된 일정만 필터링
+      // 🆕 선택된 배우가 모두 포함된 일정만 필터링
       const filteredSchedule = selectedActors.length > 0 ?
         castingData.schedule.filter(show => 
-          selectedActors.some(actor => show.cast.includes(actor))
+          selectedActors.every(actor => show.cast.includes(actor))
         ) :
         castingData.schedule;
 
@@ -1250,40 +1255,8 @@
     }
 
     function renderStats() {
-      if (selectedActors.length === 0) {
-        statsSection.classList.add('hidden');
-        return;
-      }
-
-      // 각 배우별 통계 생성
-      const statsHTML = selectedActors.map(actor => {
-        const actorSchedule = castingData.schedule.filter(show => show.cast.includes(actor));
-        
-        return `
-          <div class="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
-            <div class="text-center mb-4">
-              <h4 class="text-lg font-bold text-white">${actor}</h4>
-            </div>
-            <div class="space-y-3">
-              <div class="flex justify-between items-center">
-                <span class="text-zinc-400 text-sm">총 출연 횟수</span>
-                <span class="text-2xl font-black text-teal-400">${actorSchedule.length}회</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-zinc-400 text-sm">첫 공연</span>
-                <span class="text-sm font-semibold text-white">${actorSchedule[0]?.date} ${actorSchedule[0]?.time}</span>
-              </div>
-              <div class="flex justify-between items-center">
-                <span class="text-zinc-400 text-sm">마지막 공연</span>
-                <span class="text-sm font-semibold text-white">${actorSchedule[actorSchedule.length - 1]?.date} ${actorSchedule[actorSchedule.length - 1]?.time}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      statsSection.classList.remove('hidden');
-      statsSection.innerHTML = statsHTML;
+      // 통계 섹션 사용 안 함
+      statsSection.classList.add('hidden');
     }
 
     searchInput.addEventListener('input', (e) => {
@@ -1336,6 +1309,14 @@
 
       uploadSection.classList.add('hidden');
       showConfirmSection();
+    }
+
+    function cancelSave() {
+      saveModal.classList.add('hidden');
+    }
+
+    function confirmSave() {
+      saveModal.classList.add('hidden');
     }
   </script>
 </body>
