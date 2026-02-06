@@ -1228,7 +1228,22 @@ function renderActorButtons(searchQuery = '') {
         .replace(/\s*\(막공\)/g, '') // 막공 태그 제거
         .trim();
       
-      if (cleanActor && cleanActor.length > 1) {
+      // 한글 이름 검증 추가
+      const koreanRegex = /^[가-힣]+$/;
+
+      // 추가: 공연없음, 없음 등의 키워드 제외
+      const excludeKeywords = [
+        '공연없음', '공연 없음', '없음', 
+        'x', '-', '휴무', '공연x', '공연 x'
+       ];
+
+
+      if (
+        cleanActor && 
+        cleanActor.length > 1 && 
+        koreanRegex.test(cleanActor) &&
+        !excludeKeywords.includes(cleanActor)
+      ) {
         currentShowActors.add(cleanActor);
       }
     });
