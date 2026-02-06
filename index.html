@@ -110,7 +110,7 @@
         </div>
 
         <!-- 하단 버튼 (공연이 있을 때만 표시) -->
-        <div id="addShowButton" class="hidden flex justify-center mt-6">
+        <div id="addShowButton" class="hidden flex justify-center mt-16 mb-24">
           <button onclick="showUploadSection()" class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-105">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -410,7 +410,7 @@
         </div>
 
         <!-- 새 스케줄 추가 버튼 -->
-        <div class="mt-8 text-center">
+        <div class="mt-16 mb-24 text-center">
           <button onclick="addMoreSchedule()"
             class="px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-500/50 transition-all hover:scale-105 inline-flex items-center gap-3">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -644,6 +644,8 @@
       castingData = shows[showId].data;
       currentShowTitle.textContent = shows[showId].name;
       
+      selectedActors = []; //배우선택 초기화
+
       processData();
       showData();
       
@@ -1185,33 +1187,49 @@
     }
 
     function showData() {
-      renderActorButtons();
-      renderTable();
+  renderActorButtons();
+  renderTable();
 
-      if (castingData.note) {
-        scheduleNote.textContent = castingData.note;
+  if (castingData.note) {
+    scheduleNote.textContent = castingData.note;
+  }
+}
+
+function renderActorButtons(searchQuery = '') {
+  // 현재 공연의 실제 배우 목록만 추출
+  const currentShowActors = new Set();
+  castingData.schedule.forEach(show => {
+    show.cast.forEach(actor => {
+      let cleanActor = actor
+        .replace(/[●○•◉◎]/g, '') // 동그라미 제거
+        .replace(/\s*\(첫공\)/g, '') // 첫공 태그 제거
+        .replace(/\s*\(막공\)/g, '') // 막공 태그 제거
+        .trim();
+      
+      if (cleanActor && cleanActor.length > 1) {
+        currentShowActors.add(cleanActor);
       }
-    }
+    });
+  });
 
-    function renderActorButtons(searchQuery = '') {
-      const filteredActors = allActors.filter(actor =>
-        actor.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const filteredActors = Array.from(currentShowActors)
+    .filter(actor => actor.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort();
 
-      actorButtons.innerHTML = filteredActors.map(actor => `
-        <button
-          onclick="selectActor('${actor}')"
-          class="px-4 py-2 rounded-md font-bold transition-all ${
-            selectedActors.includes(actor)
-              ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30'
-              : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
-          }"
-        >
-          ${actor}
-          <span class="ml-2 text-xs font-semibold opacity-70">(${actorStats[actor]})</span>
-        </button>
-      `).join('');
-    }
+  actorButtons.innerHTML = filteredActors.map(actor => `
+    <button
+      onclick="selectActor('${actor}')"
+      class="px-4 py-2 rounded-md font-bold transition-all ${
+        selectedActors.includes(actor)
+          ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30'
+          : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700'
+      }"
+    >
+      ${actor}
+      <span class="ml-2 text-xs font-semibold opacity-70">(${actorStats[actor] || 0})</span>
+    </button>
+  `).join('');
+}
 
     function selectActor(actorName) {
       const index = selectedActors.indexOf(actorName);
