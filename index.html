@@ -479,15 +479,15 @@
   <script>
     // ===== 기존 코드 변수들 =====
     let castingData = null;
-    let selectedActors = []; // 🆕 배열로 변경 (중복 선택)
+    let selectedActors = [];
     let allActors = [];
     let actorStats = {};
 
     // ===== 새로 추가된 변수들 =====
-    let shows = {}; // {showId: {name, data}}
+    let shows = {};
     let currentShowId = null;
-    let tempCastingData = null; // 저장 전 임시 데이터
-    let pendingDeleteShowId = null; // 삭제 대기 중인 공연 ID
+    let tempCastingData = null;
+    let pendingDeleteShowId = null;
 
     // ===== DOM 요소 참조 =====
     const homeSection = document.getElementById('homeSection');
@@ -629,12 +629,9 @@
       confirmSection.classList.remove('hidden');
       dataSection.classList.add('hidden');
 
-      // 데이터 입력
       if (currentShowId && shows[currentShowId]) {
-        // 수정 모드: 기존 공연명 표시
         showNameEditInput.value = shows[currentShowId].name;
       } else {
-        // 새 공연 추가 모드: 빈 값
         showNameEditInput.value = '';
       }
       rolesInput.value = tempCastingData.roles.join(', ');
@@ -668,7 +665,6 @@
         return;
       }
       
-      // 삭제 모달 표시
       pendingDeleteShowId = showId;
       deleteShowName.textContent = `"${show.name}"`;
       deleteModal.classList.remove('hidden');
@@ -687,7 +683,6 @@
       deleteModal.classList.add('hidden');
       pendingDeleteShowId = null;
       
-      // 현재 보고 있던 공연을 삭제한 경우 홈으로 이동
       if (wasViewingThisShow) {
         showHomeSection();
       } else {
@@ -700,22 +695,17 @@
       pendingDeleteShowId = null;
     }
 
-    // ===== 확인 화면에서 삭제 버튼 =====
     document.getElementById('deleteFromConfirmBtn').addEventListener('click', () => {
       if (currentShowId) {
-        // 수정 모드인 경우 - 기존 공연 삭제 모달 표시
         deleteShowFromHome(currentShowId);
       } else {
-        // 새 공연 추가 중인 경우 - 작업 취소
         tempCastingData = null;
         showHomeSection();
       }
     });
 
-    // ===== 공연 수정 =====
     editShowBtn.addEventListener('click', () => {
       if (currentShowId) {
-        // 현재 공연 데이터를 tempCastingData에 복사
         tempCastingData = JSON.parse(JSON.stringify(shows[currentShowId].data));
         showConfirmSection();
       }
@@ -727,14 +717,13 @@
       }
     });
 
-    // ===== 🆕 추가 스케줄 업로드 기능 =====
+    // ===== 추가 스케줄 업로드 기능 =====
     function addMoreSchedule() {
       if (!currentShowId) {
         alert('공연을 먼저 선택해주세요.');
         return;
       }
       
-      // 파일 선택 트리거
       const additionalFileInput = document.createElement('input');
       additionalFileInput.type = 'file';
       additionalFileInput.accept = 'image/*';
@@ -747,7 +736,6 @@
           return;
         }
 
-        // 로딩 화면 표시
         dataSection.classList.add('hidden');
         loadingSection.classList.remove('hidden');
 
@@ -761,7 +749,7 @@
       additionalFileInput.click();
     }
 
-    // 추가 이미지 처리
+    // 🆕 추가 이미지 처리 (동그라미 처리 포함)
     async function processAdditionalImage(imageData) {
       try {
         const response = await fetch("/api/analyze", {
@@ -795,7 +783,9 @@
         const cleanText = text.replace(/```json|```/g, "").trim();
         const newCastingData = JSON.parse(cleanText);
 
-        // 기존 스케줄에 새 스케줄 추가
+        // 🆕 동그라미 처리
+        processFirstLastShow(newCastingData);
+
         if (newCastingData.schedule && newCastingData.schedule.length > 0) {
           shows[currentShowId].data.schedule = [
             ...shows[currentShowId].data.schedule,
@@ -807,7 +797,6 @@
           loadingSection.classList.add('hidden');
           alert(`${newCastingData.schedule.length}개의 일정이 추가되었습니다!`);
           
-          // 화면 새로고침
           viewShow(currentShowId);
         } else {
           throw new Error("새로운 일정을 찾을 수 없습니다.");
@@ -816,7 +805,7 @@
         console.error("Processing error:", error);
         alert(`이미지 처리 중 오류가 발생했습니다.\n\n에러: ${error.message}\n\n개발자 콘솔을 확인해주세요.`);
         loadingSection.classList.add('hidden');
-        viewShow(currentShowId); // 원래 화면으로 복귀
+        viewShow(currentShowId);
       }
     }
 
@@ -867,10 +856,9 @@
       reader.readAsDataURL(file);
     }
 
-    // ===== 이미지 처리 (기존 API 방식 그대로 유지) =====
+    // 🆕 이미지 처리 (동그라미 감지 및 첫공/막공 처리 추가)
     async function processImage(imageData) {
       try {
-        // ✅ Vercel Serverless Function 호출
         const response = await fetch("/api/analyze", {
           method: "POST",
           headers: {
@@ -902,6 +890,9 @@
         const cleanText = text.replace(/```json|```/g, "").trim();
         tempCastingData = JSON.parse(cleanText);
 
+        // 🆕 동그라미(●, ○, •) 감지 및 첫공/막공 처리
+        processFirstLastShow(tempCastingData);
+
         loadingSection.classList.add('hidden');
         showConfirmSection();
       } catch (error) {
@@ -910,6 +901,56 @@
         loadingSection.classList.add('hidden');
         uploadSection.classList.remove('hidden');
       }
+    }
+
+    // 🆕 첫공/막공 처리 함수
+    function processFirstLastShow(data) {
+      if (!data.schedule || data.schedule.length === 0) return;
+
+      // 날짜별로 정렬
+      const sortedSchedule = [...data.schedule].sort((a, b) => {
+        const dateA = parseDateString(a.date);
+        const dateB = parseDateString(b.date);
+        return dateA - dateB;
+      });
+
+      const firstShowDate = sortedSchedule[0].date;
+      const lastShowDate = sortedSchedule[sortedSchedule.length - 1].date;
+
+      // 각 스케줄의 배우 이름에서 동그라미 확인 및 제거
+      data.schedule.forEach(show => {
+        show.cast = show.cast.map(actorName => {
+          const circlePattern = /[●○•◉◎]/g;
+          const hasCircle = circlePattern.test(actorName);
+          
+          // 동그라미 제거한 깨끗한 이름
+          const cleanName = actorName.replace(circlePattern, '').trim();
+          
+          // 동그라미가 있었다면 첫공/막공 태그 추가
+          if (hasCircle) {
+            if (show.date === firstShowDate) {
+              return `${cleanName} (첫공)`;
+            } else if (show.date === lastShowDate) {
+              return `${cleanName} (막공)`;
+            }
+          }
+          
+          return cleanName;
+        });
+      });
+    }
+
+    // 날짜 문자열을 Date 객체로 변환하는 헬퍼 함수
+    function parseDateString(dateStr) {
+      // "03.15 (금)" 형식을 파싱
+      const match = dateStr.match(/(\d+)\.(\d+)/);
+      if (match) {
+        const month = parseInt(match[1]);
+        const day = parseInt(match[2]);
+        const currentYear = new Date().getFullYear();
+        return new Date(currentYear, month - 1, day);
+      }
+      return new Date();
     }
 
     // ===== 배우 이름 일괄 변경 =====
@@ -929,7 +970,6 @@
       
       let replacedCount = 0;
       
-      // 모든 일정의 배우 이름 변경
       tempCastingData.schedule.forEach(show => {
         show.cast = show.cast.map(actor => {
           if (actor.trim() === findName) {
@@ -944,7 +984,6 @@
         alert(`"${findName}"을(를) "${replaceName}"(으)로 ${replacedCount}개 항목 변경했습니다.`);
         renderScheduleEditTable();
         
-        // 입력 필드 초기화
         document.getElementById('findActorInput').value = '';
         document.getElementById('replaceActorInput').value = '';
       } else {
@@ -986,7 +1025,6 @@
         </tr>
       `).join('');
 
-      // 이벤트 리스너 추가
       document.querySelectorAll('.schedule-field').forEach(input => {
         input.addEventListener('change', (e) => {
           const index = parseInt(e.target.dataset.index);
@@ -1028,33 +1066,31 @@
 
     // ===== 저장 진행 =====
     function proceedToSave() {
-      // 공연명 확인
       const showName = showNameEditInput.value.trim();
       if (!showName) {
         alert('공연명을 입력해주세요.');
         return;
       }
 
-      // 역할 업데이트
       const rolesText = rolesInput.value.trim();
       if (!rolesText) {
         alert('역할을 입력해주세요.');
         return;
       }
-      tempCastingData.roles = rolesText.split(',').map(s => s.trim()).filter(Boolean);
+      // 자동 제외 목록 추가
+      const excludedRoles = ['날짜', '요일', '시간'];
 
-      // 일정 검증
+      tempCastingData.roles = rolesText.split(',').map(s => s.trim()).filter(role => 
+      role &&!excludedRoles.some(excluded => role.includes(excluded)));
+
       if (tempCastingData.schedule.length === 0) {
         alert('최소 1개 이상의 일정을 입력해주세요.');
         return;
       }
 
-      // 특이사항 업데이트
       tempCastingData.note = noteInput.value.trim();
 
-      // 바로 저장
       if (currentShowId) {
-        // 수정 모드: 기존 공연 업데이트
         shows[currentShowId] = {
           name: showName,
           data: tempCastingData
@@ -1064,9 +1100,8 @@
         tempCastingData = null;
         
         alert(`"${showName}" 공연이 수정되었습니다!`);
-        viewShow(currentShowId); // 수정된 공연 다시 표시
+        viewShow(currentShowId);
       } else {
-        // 새 공연 생성
         const showId = Date.now().toString();
         shows[showId] = {
           name: showName,
@@ -1081,11 +1116,10 @@
       }
     }
 
-    // ===== 기존 코드의 함수들 =====
+    // 🆕 processData - 동그라미와 첫공/막공 태그 제거 후 중복 제거
     function processData() {
       const actorsSet = new Set();
       
-      // '공연없음' 관련 키워드 목록 (대소문자 무시, 공백 무시)
       const excludeKeywords = [
         '공연없음',
         '공연 없음',
@@ -1099,19 +1133,21 @@
       
       castingData.schedule.forEach(show => {
         show.cast.forEach(actor => {
-          const cleanActor = actor.trim();
+          let cleanActor = actor.trim();
           
-          // 빈 문자열 제외
           if (!cleanActor) return;
           
-          // 한 글자만 있는 경우 제외 (쉼표로 잘못 분리된 케이스)
-          // 예: "공,연,없,음" → ["공", "연", "없", "음"] 각각 제외
+          // 🆕 동그라미(●, ○, •) 제거
+          cleanActor = cleanActor.replace(/[●○•◉◎]/g, '').trim();
+          
+          // 🆕 (첫공), (막공) 태그 제거
+          cleanActor = cleanActor.replace(/\s*\(첫공\)/g, '').replace(/\s*\(막공\)/g, '').trim();
+          
           if (cleanActor.length === 1) {
             console.log(`한 글자 배우 이름 제외: "${cleanActor}"`);
             return;
           }
           
-          // 제외 키워드 체크 (대소문자 무시, 공백 제거하여 비교)
           const normalizedActor = cleanActor.toLowerCase().replace(/\s+/g, '');
           const shouldExclude = excludeKeywords.some(keyword => {
             const normalizedKeyword = keyword.toLowerCase().replace(/\s+/g, '');
@@ -1129,7 +1165,15 @@
       actorStats = {};
       allActors.forEach(actor => {
         actorStats[actor] = castingData.schedule.filter(show =>
-          show.cast.includes(actor)
+          show.cast.some(castActor => {
+            // 🆕 동그라미와 태그 제거 후 비교
+            const cleanCastActor = castActor
+              .replace(/[●○•◉◎]/g, '')
+              .replace(/\s*\(첫공\)/g, '')
+              .replace(/\s*\(막공\)/g, '')
+              .trim();
+            return cleanCastActor === actor;
+          })
         ).length;
       });
     }
@@ -1163,14 +1207,11 @@
       `).join('');
     }
 
-    // 🆕 배우 중복 선택 기능
     function selectActor(actorName) {
       const index = selectedActors.indexOf(actorName);
       if (index > -1) {
-        // 이미 선택된 배우 - 제거
         selectedActors.splice(index, 1);
       } else {
-        // 새로운 배우 - 추가
         selectedActors.push(actorName);
       }
       
@@ -1179,17 +1220,26 @@
       updateFilterUI();
     }
 
+    // 🆕 updateFilterUI - 동그라미와 태그 제거 후 비교
     function updateFilterUI() {
       if (selectedActors.length > 0) {
         selectedActorBadge.classList.remove('hidden');
         filterHint.classList.add('hidden');
         
-        // 선택된 배우들 표시
         selectedActorsText.textContent = selectedActors.join(', ');
 
-        // 총 출연 횟수 계산 (모든 배우가 포함된 경우만)
         const totalCount = castingData.schedule.filter(show => {
-          return selectedActors.every(actor => show.cast.includes(actor));
+          return selectedActors.every(actor => {
+            return show.cast.some(castActor => {
+              // 🆕 동그라미와 태그 제거 후 비교
+              const cleanCastActor = castActor
+                .replace(/[●○•◉◎]/g, '')
+                .replace(/\s*\(첫공\)/g, '')
+                .replace(/\s*\(막공\)/g, '')
+                .trim();
+              return cleanCastActor === actor;
+            });
+          });
         }).length;
 
         showInfo.classList.remove('hidden');
@@ -1204,11 +1254,21 @@
       }
     }
 
+    // 🆕 renderTable - 동그라미와 태그 제거 후 필터링
     function renderTable() {
-      // 🆕 선택된 배우가 모두 포함된 일정만 필터링
       const filteredSchedule = selectedActors.length > 0 ?
         castingData.schedule.filter(show => 
-          selectedActors.every(actor => show.cast.includes(actor))
+          selectedActors.every(actor => {
+            return show.cast.some(castActor => {
+              // 🆕 동그라미와 태그 제거 후 비교
+              const cleanCastActor = castActor
+                .replace(/[●○•◉◎]/g, '')
+                .replace(/\s*\(첫공\)/g, '')
+                .replace(/\s*\(막공\)/g, '')
+                .trim();
+              return cleanCastActor === actor;
+            });
+          })
         ) :
         castingData.schedule;
 
@@ -1239,7 +1299,7 @@
               isActorInShow(show, castIdx) ?
                 'active bg-teal-500/30 font-black text-teal-300 ring-2 ring-inset ring-teal-500/50' : 'text-zinc-300 font-semibold'
             }">
-              <button onclick="selectActor('${actor}')" class="hover:text-teal-400 transition-colors w-full">
+              <button onclick="selectActor('${actor.replace(/[●○•◉◎]/g, '').replace(/\s*\(첫공\)/g, '').replace(/\s*\(막공\)/g, '').trim()}')" class="hover:text-teal-400 transition-colors w-full">
                 ${actor}
               </button>
             </td>
@@ -1248,10 +1308,16 @@
       `).join('');
     }
 
-    // 🆕 선택된 배우 중 하나라도 포함되면 하이라이트
+    // 🆕 isActorInShow - 동그라미와 태그 제거 후 비교
     function isActorInShow(show, roleIndex) {
       const actorAtRole = show.cast[roleIndex];
-      return selectedActors.includes(actorAtRole);
+      // 🆕 동그라미와 태그 제거 후 비교
+      const cleanActorAtRole = actorAtRole
+        .replace(/[●○•◉◎]/g, '')
+        .replace(/\s*\(첫공\)/g, '')
+        .replace(/\s*\(막공\)/g, '')
+        .trim();
+      return selectedActors.includes(cleanActorAtRole);
     }
 
     function renderStats() {
