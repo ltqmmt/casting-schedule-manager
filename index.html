@@ -755,8 +755,10 @@
 
         const reader = new FileReader();
         reader.onload = async (e) => {
-          const base64Data = e.target.result.split(',')[1];
-          await processAdditionalImage(base64Data);
+          const dataUrl = e.target.result;
+          const mediaType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';'));
+          const base64Data = dataUrl.split(',')[1];
+          await processAdditionalImage(base64Data, mediaType);
         };
         reader.readAsDataURL(file);
       };
@@ -764,7 +766,7 @@
     }
 
     // 🆕 추가 이미지 처리 (동그라미 처리 포함)
-    async function processAdditionalImage(imageData) {
+    async function processAdditionalImage(imageData, mediaType) {
       try {
         const response = await fetch("/api/analyze", {
           method: "POST",
@@ -772,7 +774,8 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            imageData: imageData
+            imageData: imageData,
+            mediaType: mediaType
           })
         });
 
@@ -864,14 +867,16 @@
 
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const base64Data = e.target.result.split(',')[1];
-        await processImage(base64Data);
+        const dataUrl = e.target.result;
+        const mediaType = dataUrl.substring(dataUrl.indexOf(':') + 1, dataUrl.indexOf(';'));
+        const base64Data = dataUrl.split(',')[1];
+        await processImage(base64Data, mediaType);
       };
       reader.readAsDataURL(file);
     }
 
     // 🆕 이미지 처리 (동그라미 감지 및 첫공/막공 처리 추가)
-    async function processImage(imageData) {
+    async function processImage(imageData, mediaType) {
       try {
         const response = await fetch("/api/analyze", {
           method: "POST",
@@ -879,7 +884,8 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            imageData: imageData
+            imageData: imageData,
+            mediaType: mediaType
           })
         });
 

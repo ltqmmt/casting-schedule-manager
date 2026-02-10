@@ -14,11 +14,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { imageData } = req.body;
+    const { imageData, mediaType } = req.body;
 
     if (!imageData) {
       return res.status(400).json({ error: "imageData is required" });
     }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    const resolvedMediaType = allowedTypes.includes(mediaType) ? mediaType : "image/jpeg";
 
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -38,7 +41,7 @@ export default async function handler(req, res) {
                 type: "image",
                 source: {
                   type: "base64",
-                  media_type: "image/jpeg",
+                  media_type: resolvedMediaType,
                   data: imageData,
                 },
               },
