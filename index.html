@@ -994,15 +994,36 @@ function processFirstLastShow(data) {
 
     // 날짜 문자열을 Date 객체로 변환하는 헬퍼 함수
     function parseDateString(dateStr) {
-      // "03.15 (금)" 형식을 파싱
-      const match = dateStr.match(/(\d+)\.(\d+)/);
-      if (match) {
-        const month = parseInt(match[1]);
-        const day = parseInt(match[2]);
+      if (!dateStr) return new Date(0);
+
+      // "03.15 (금)" 또는 "03.15" 형식
+      const dotMatch = dateStr.match(/(\d+)\.(\d+)/);
+      if (dotMatch) {
+        const month = parseInt(dotMatch[1]);
+        const day = parseInt(dotMatch[2]);
         const currentYear = new Date().getFullYear();
         return new Date(currentYear, month - 1, day);
       }
-      return new Date();
+
+      // "7월 26일" 또는 "12월 3일" 형식
+      const koreanMatch = dateStr.match(/(\d+)\s*월\s*(\d+)\s*일?/);
+      if (koreanMatch) {
+        const month = parseInt(koreanMatch[1]);
+        const day = parseInt(koreanMatch[2]);
+        const currentYear = new Date().getFullYear();
+        return new Date(currentYear, month - 1, day);
+      }
+
+      // "3/15" 또는 "03/15" 형식
+      const slashMatch = dateStr.match(/(\d+)\/(\d+)/);
+      if (slashMatch) {
+        const month = parseInt(slashMatch[1]);
+        const day = parseInt(slashMatch[2]);
+        const currentYear = new Date().getFullYear();
+        return new Date(currentYear, month - 1, day);
+      }
+
+      return new Date(0);
     }
 
     // ===== 배우 이름 일괄 변경 =====
@@ -1157,6 +1178,13 @@ function processFirstLastShow(data) {
       }
 
       tempCastingData.note = noteInput.value.trim();
+
+      // 날짜 오름차순 정렬 (빠른 날짜 먼저)
+      tempCastingData.schedule.sort((a, b) => {
+        const dateA = parseDateString(a.date);
+        const dateB = parseDateString(b.date);
+        return dateA - dateB;
+      });
 
       if (currentShowId) {
         shows[currentShowId] = {
