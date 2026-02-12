@@ -35,6 +35,7 @@ As-Is:
 To-Be:
 <img width="1072" height="946" alt="image" src="https://github.com/user-attachments/assets/7d6d69e3-806b-458b-b466-d7ce211c4f87" />
 <img width="1084" height="843" alt="image" src="https://github.com/user-attachments/assets/f804719e-b731-4422-8522-c76ff33642f5" />
+<img width="909" height="946" alt="홈" src="https://github.com/user-attachments/assets/c9c72976-c129-4a04-a3c0-0e1002345afe" />
 
 
 
