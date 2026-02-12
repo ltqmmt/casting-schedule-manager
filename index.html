@@ -310,6 +310,14 @@
               </table>
             </div>
           </div>
+
+          <!-- 특이사항 -->
+          <div class="mt-6">
+            <label class="block text-sm font-bold text-teal-400 mb-3">특이사항</label>
+            <textarea id="noteInput" rows="3" 
+              class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
+              placeholder="공연 관련 특이사항을 입력하세요"></textarea>
+          </div>
         </div>
       </div>
 
@@ -800,14 +808,7 @@
             ...shows[currentShowId].data.schedule,
             ...newCastingData.schedule
           ];
-
-          // 날짜 오름차순 정렬 (빠른 날짜 먼저)
-          shows[currentShowId].data.schedule.sort((a, b) => {
-            const dateA = parseDateString(a.date);
-            const dateB = parseDateString(b.date);
-            return dateA - dateB;
-          });
-
+          
           saveShows();
           
           loadingSection.classList.add('hidden');
@@ -975,13 +976,6 @@ function processFirstLastShow(data) {
 
   // 빈 캐스트 제거
   data.schedule = data.schedule.filter(show => show.cast.length > 0);
-
-  // 날짜 오름차순 정렬 (빠른 날짜 먼저)
-  data.schedule.sort((a, b) => {
-    const dateA = parseDateString(a.date);
-    const dateB = parseDateString(b.date);
-    return dateA - dateB;
-  });
 }
 
     // 날짜 문자열을 Date 객체로 변환하는 헬퍼 함수
@@ -1347,8 +1341,8 @@ function renderActorButtons(searchQuery = '') {
 
     // 🆕 renderTable - 동그라미와 태그 제거 후 필터링
     function renderTable() {
-      const filtered = selectedActors.length > 0 ?
-        castingData.schedule.filter(show =>
+      const filteredSchedule = selectedActors.length > 0 ?
+        castingData.schedule.filter(show => 
           selectedActors.every(actor => {
             return show.cast.some(castActor => {
               // 🆕 동그라미와 태그 제거 후 비교
@@ -1362,13 +1356,6 @@ function renderActorButtons(searchQuery = '') {
           })
         ) :
         castingData.schedule;
-
-      // 항상 날짜 오름차순 정렬 (빠른 날짜 먼저)
-      const filteredSchedule = [...filtered].sort((a, b) => {
-        const dateA = parseDateString(a.date);
-        const dateB = parseDateString(b.date);
-        return dateA - dateB;
-      });
 
       tableHead.innerHTML = `
         <tr class="bg-teal-800/80 backdrop-blur">
