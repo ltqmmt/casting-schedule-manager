@@ -1329,8 +1329,8 @@
           const cleanText = text.replace(/```json|```/g, "").trim();
           const newCastingData = JSON.parse(cleanText);
 
-          // 동그라미 처리
-          processFirstLastShow(newCastingData);
+          // 스케줄 데이터 정제
+          cleanScheduleData(newCastingData);
 
           if (newCastingData.schedule && newCastingData.schedule.length > 0) {
             // 기존 배우 목록과 비교하여 유사한 이름 찾기
@@ -1396,16 +1396,6 @@
           show.phase = phase;
         });
         
-        // 기존 schedule에서 (첫공), (막공) 태그 제거
-        shows[currentShowId].data.schedule.forEach(show => {
-          show.cast = show.cast.map(actor => {
-            return actor
-              .replace(/\s*\(첫공\)/g, "")
-              .replace(/\s*\(막공\)/g, "")
-              .trim();
-          });
-        });
-        
         // 기존 schedule에 새로운 스케줄 추가
         shows[currentShowId].data.schedule = [
           ...shows[currentShowId].data.schedule,
@@ -1423,33 +1413,6 @@
           const dateB = parseDateString(b.date);
           return dateA - dateB;
         });
-        
-        // (첫공)과 (막공) 재할당
-        // 1차가 존재하면 첫 번째 행에 (첫공) 추가
-        const firstPhase1Index = shows[currentShowId].data.schedule.findIndex(show => show.phase === 1);
-        if (firstPhase1Index !== -1) {
-          shows[currentShowId].data.schedule[firstPhase1Index].cast = 
-            shows[currentShowId].data.schedule[firstPhase1Index].cast.map(actor => {
-              if (actor.includes("(첫공)")) return actor;
-              return `${actor} (첫공)`;
-            });
-        }
-
-        // 3차가 존재하면 마지막 행에 (막공) 추가
-        let lastPhase3Index = -1;
-        for (let i = shows[currentShowId].data.schedule.length - 1; i >= 0; i--) {
-          if (shows[currentShowId].data.schedule[i].phase === 3) {
-            lastPhase3Index = i;
-            break;
-          }
-        }
-        if (lastPhase3Index !== -1) {
-          shows[currentShowId].data.schedule[lastPhase3Index].cast = 
-            shows[currentShowId].data.schedule[lastPhase3Index].cast.map(actor => {
-              if (actor.includes("(막공)")) return actor;
-              return `${actor} (막공)`;
-            });
-        }
         
         saveShows();
         tempAdditionalData = null;
@@ -1634,8 +1597,8 @@
               role && !excludedRoles.some((excluded) => role === excluded),
           );
 
-          // 동그라미(●, ○, •) 감지 및 첫공/막공 처리
-          processFirstLastShow(tempCastingData);
+          // 스케줄 데이터 정제
+          cleanScheduleData(tempCastingData);
 
           loadingSection.classList.add("hidden");
           
@@ -1668,8 +1631,8 @@
         document.getElementById("savePhaseModal").classList.add("hidden");
       }
 
-      // 첫공/막공 처리 함수
-      function processFirstLastShow(data) {
+      // 스케줄 데이터 정제 함수 (동그라미 제거 및 한글 이름만 필터링)
+      function cleanScheduleData(data) {
         if (!data.schedule || data.schedule.length === 0) return;
 
         // 한글 이름 검증 함수
@@ -1776,9 +1739,6 @@
 
           tempCastingData.schedule.forEach((show) => {
             show.cast = show.cast.map((actor) => {
-              const hasFirst = actor.includes("(첫공)");
-              const hasLast = actor.includes("(막공)");
-
               const cleanName = actor
                 .replace(/\s*\(첫공\)/g, "")
                 .replace(/\s*\(막공\)/g, "")
@@ -1786,10 +1746,7 @@
 
               if (cleanName === newActorName) {
                 replacedCount++;
-                let newName = mergeActorName;
-                if (hasFirst) newName += " (첫공)";
-                if (hasLast) newName += " (막공)";
-                return newName;
+                return mergeActorName;
               }
 
               return actor;
@@ -1835,9 +1792,6 @@
 
         tempCastingData.schedule.forEach((show) => {
           show.cast = show.cast.map((actor) => {
-            // 태그 분리
-            const hasFirst = actor.includes("(첫공)");
-
             // 이름만 추출 (모든 태그 제거)
             const cleanName = actor
               .replace(/\s*\(첫공\)/g, "")
@@ -1846,12 +1800,7 @@
 
             if (cleanName === newActorName) {
               replacedCount++;
-
-              let newName = mergeActorName;
-              // (첫공)만 유지, (막공)은 제거
-              if (hasFirst) newName += " (첫공)";
-
-              return newName;
+              return mergeActorName;
             }
 
             return actor;
@@ -1993,32 +1942,6 @@
         } else {
           // 신규 모드 - 바로 저장
           
-          // 1차가 존재하면 첫 번째 행에 (첫공) 추가
-          const firstPhase1Index = tempCastingData.schedule.findIndex(show => show.phase === 1);
-          if (firstPhase1Index !== -1) {
-            tempCastingData.schedule[firstPhase1Index].cast = 
-              tempCastingData.schedule[firstPhase1Index].cast.map(actor => {
-                if (actor.includes("(첫공)")) return actor;
-                return `${actor} (첫공)`;
-              });
-          }
-
-          // 3차가 존재하면 마지막 행에 (막공) 추가
-          let lastPhase3Index = -1;
-          for (let i = tempCastingData.schedule.length - 1; i >= 0; i--) {
-            if (tempCastingData.schedule[i].phase === 3) {
-              lastPhase3Index = i;
-              break;
-            }
-          }
-          if (lastPhase3Index !== -1) {
-            tempCastingData.schedule[lastPhase3Index].cast = 
-              tempCastingData.schedule[lastPhase3Index].cast.map(actor => {
-                if (actor.includes("(막공)")) return actor;
-                return `${actor} (막공)`;
-              });
-          }
-          
           const showId = Date.now().toString();
           shows[showId] = {
             name: showName,
@@ -2034,6 +1957,7 @@
       }
 
       // processData - 동그라미와 첫공/막공 태그 제거 후 중복 제거
+      // 데이터 처리 및 배우 목록 생성
       function processData() {
         const actorsSet = new Set();
 
@@ -2056,12 +1980,6 @@
 
             // 동그라미(●, ○, •) 제거
             cleanActor = cleanActor.replace(/[●○•◉◎⑩]/g, "").trim();
-
-            // (첫공), (막공) 태그 제거
-            cleanActor = cleanActor
-              .replace(/\s*\(첫공\)/g, "")
-              .replace(/\s*\(막공\)/g, "")
-              .trim();
 
             if (cleanActor.length === 1) {
               console.log(`한 글자 배우 이름 제외: "${cleanActor}"`);
@@ -2101,20 +2019,12 @@
           show.cast = show.cast.map(actor => {
             let cleanActor = actor.trim()
               .replace(/[●○•◉◎⑩]/g, "")
-              .replace(/\s*\(첫공\)/g, "")
-              .replace(/\s*\(막공\)/g, "")
               .trim();
 
             const normalizedKey = cleanActor.toLowerCase().replace(/\s+/g, "");
             const mergedName = actorMergeMap[normalizedKey];
 
             if (mergedName && mergedName !== cleanActor) {
-              // 이름이 병합되었으면, 태그는 유지하면서 이름만 변경
-              if (actor.includes("(첫공)")) {
-                return `${mergedName} (첫공)`;
-              } else if (actor.includes("(막공)")) {
-                return `${mergedName} (막공)`;
-              }
               return mergedName;
             }
             return actor;
@@ -2128,11 +2038,9 @@
         allActors.forEach((actor) => {
           actorStats[actor] = castingData.schedule.filter((show) =>
             show.cast.some((castActor) => {
-              // 동그라미와 태그 제거 후 비교
+              // 동그라미 제거 후 비교
               const cleanCastActor = castActor
                 .replace(/[●○•◉◎⑩]/g, "")
-                .replace(/\s*\(첫공\)/g, "")
-                .replace(/\s*\(막공\)/g, "")
                 .trim();
               return cleanCastActor === actor;
             }),
@@ -2206,14 +2114,12 @@
           show.cast.forEach((actor) => {
             let cleanActor = actor
               .replace(/[●○•◉◎⑩]/g, "") // 동그라미 제거
-              .replace(/\s*\(첫공\)/g, "") // 첫공 태그 제거
-              .replace(/\s*\(막공\)/g, "") // 막공 태그 제거
               .trim();
 
-            // 한글 이름 검증 추가
+            // 한글 이름 검증
             const koreanRegex = /^[가-힣]+$/;
 
-            // 추가: 공연없음, 없음 등의 키워드 제외
+            // 제외 키워드
             const excludeKeywords = [
               "공연없음",
               "공연 없음",
@@ -2405,14 +2311,11 @@
           .join("");
       }
 
-      // isActorInShow - 동그라미와 태그 제거 후 비교
+      // 선택된 배우가 현재 역할에 있는지 확인
       function isActorInShow(show, roleIndex) {
         const actorAtRole = show.cast[roleIndex];
-        // 동그라미와 태그 제거 후 비교
         const cleanActorAtRole = actorAtRole
           .replace(/[●○•◉◎⑩]/g, "")
-          .replace(/\s*\(첫공\)/g, "")
-          .replace(/\s*\(막공\)/g, "")
           .trim();
         return selectedActors.includes(cleanActorAtRole);
       }
