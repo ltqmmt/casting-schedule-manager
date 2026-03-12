@@ -91,7 +91,7 @@
           <div class="text-center">
             <h1
               class="text-4xl md:text-5xl font-black mb-4 tracking-tight cursor-pointer transition-colors"
-              onclick="showHomeSection()"
+              onclick="showSection('home')"
             >
               캐스팅 스케줄 자동 관리
             </h1>
@@ -143,7 +143,7 @@
               </p>
             </div>
             <button
-              onclick="showUploadSection()"
+              onclick="showSection('upload')"
               class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-105"
             >
               <svg
@@ -166,10 +166,10 @@
           <!-- 하단 버튼 (공연이 있을 때만 표시) -->
           <div
             id="addShowButton"
-            class="hidden flex justify-center mt-16 mb-24"
+            class="hidden justify-center mt-16 mb-24"
           >
             <button
-              onclick="showUploadSection()"
+              onclick="showSection('upload')"
               class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-105"
             >
               <svg
@@ -195,7 +195,7 @@
           <div class="max-w-3xl mx-auto">
             <div class="mb-6 flex justify-between items-center">
               <button
-                onclick="showHomeSection()"
+                onclick="showSection('home')"
                 class="px-4 py-4 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-all inline-flex items-center gap-2"
               >
                 <svg
@@ -302,46 +302,37 @@
         <!-- 로딩 화면 -->
         <div id="loadingSection" class="hidden">
           <div class="max-w-3xl mx-auto">
-            <div
-              class="relative border-2 border-dashed border-teal-500 bg-teal-500/10 rounded-2xl p-16 text-center"
-            >
-              <div class="space-y-6">
+            <div class="relative border-2 border-dashed border-teal-500 bg-teal-500/10 rounded-2xl p-16 text-center">
+              <div class="space-y-8">
+
+                <!-- 아이콘 -->
                 <div class="flex justify-center">
-                  <svg
-                    class="w-20 h-20 text-teal-500 animate-pulse"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-                    />
+                  <svg class="w-20 h-20 text-teal-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
                 </div>
+
+                <!-- 텍스트 -->
                 <div>
-                  <h3 class="text-2xl font-semibold text-teal-400 mb-2">
-                    AI가 캐스팅 스케줄 분석 중...
-                  </h3>
-                  <p class="text-zinc-400">
-                    배우와 출연 일정을 불러오는 중이에요. 1분정도 기다려주세요!
-                  </p>
+                  <h3 class="text-2xl font-semibold text-teal-400 mb-2">AI가 캐스팅 스케줄 분석 중...</h3>
+                  <p class="text-zinc-400">배우와 출연 일정을 불러오는 중이에요.</p>
                 </div>
-                <div class="flex justify-center gap-2">
-                  <div
-                    class="w-3 h-3 bg-teal-500 rounded-full animate-bounce"
-                  ></div>
-                  <div
-                    class="w-3 h-3 bg-teal-500 rounded-full animate-bounce"
-                    style="animation-delay: 0.1s"
-                  ></div>
-                  <div
-                    class="w-3 h-3 bg-teal-500 rounded-full animate-bounce"
-                    style="animation-delay: 0.2s"
-                  ></div>
+
+                <!-- 프로그레스바 -->
+                <div class="space-y-3">
+                  <div class="w-full bg-zinc-800 rounded-full h-3 overflow-hidden">
+                    <div id="loadingProgressBar"
+                      class="h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-400 transition-none"
+                      style="width: 0%">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center text-sm">
+                    <span id="loadingStatusText" class="text-zinc-400">분석 준비 중...</span>
+                    <span id="loadingPercentText" class="text-teal-400 font-bold">0%</span>
+                  </div>
                 </div>
+
               </div>
             </div>
           </div>
@@ -350,28 +341,30 @@
         <!-- 확인 및 수정 화면 -->
         <div id="confirmSection" class="hidden">
           <div class="mb-8 flex items-center justify-between">
-            <button
-              onclick="showDataSection()"
-              class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-md text-zinc-300 font-medium transition-all"
-            >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+            <div class="flex items-center gap-4">
+              <button
+                id="confirmBackBtn"
+                onclick="showDataSectionFromConfirm()"
+                class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-md text-zinc-300 font-medium transition-all"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-            </button>
-
-            <h2 class="text-3xl font-black text-white">
-              📝 데이터 확인 및 수정
-            </h2>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <h2 class="text-3xl font-black text-white">
+                📝 데이터 확인 및 수정
+              </h2>
+            </div>
 
             <div class="flex gap-3">
               <button
@@ -416,136 +409,154 @@
             </div>
           </div>
 
-          <div
-            class="bg-zinc-900/50 border border-teal-700/30 rounded-lg p-6 mb-6"
-          >
-            <p class="text-zinc-400 mb-4">
+          <!-- 안내 문구 -->
+          <div class="flex items-center gap-3 px-5 py-4 mb-6 bg-teal-500/10 border border-teal-500/40 rounded-xl">
+            <svg class="w-5 h-5 text-teal-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-teal-300 text-sm font-medium">
               AI가 분석한 내용을 확인하고, 잘못된 부분이 있다면 수정해주세요.
             </p>
+          </div>
 
-            <!-- 공연명 입력 -->
-            <div class="mb-6">
-              <label class="block text-sm font-bold text-teal-400 mb-3"
-                >공연명</label
-              >
-              <input
-                type="text"
-                id="showNameEditInput"
-                class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
-                placeholder="예: 2026 데스노트"
-              />
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+
+            <!-- 왼쪽: 원본 이미지 -->
+            <div id="uploadedImageContainer" class="hidden">
+              <label class="block text-sm font-bold text-teal-400 mb-3">원본 이미지</label>
+              <div class="rounded-lg border border-zinc-700 overflow-hidden sticky top-6">
+                <img id="uploadedImage" src="" alt="업로드된 이미지" class="w-full" />
+              </div>
             </div>
 
-            <!-- 역할 수정 -->
-            <div class="mb-6">
-              <label class="block text-sm font-bold text-teal-400 mb-3"
-                >역할 (쉼표로 구분)</label
-              >
-              <input
-                type="text"
-                id="rolesInput"
-                class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
-                placeholder="예: 엘사, 안나, 크리스토프"
-              />
-            </div>
+            <!-- 오른쪽: 수정 폼 -->
+            <div class="space-y-6">
+              <!-- 공연명 입력 -->
+              <div>
+                <label class="block text-sm font-bold text-teal-400 mb-3"
+                  >공연명</label
+                >
+                <input
+                  type="text"
+                  id="showNameEditInput"
+                  class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
+                  placeholder="예: 2026 데스노트"
+                />
+              </div>
 
-            <!-- 배우 이름 수정 -->
-            <div class="mb-6">
-              <label class="block text-sm font-bold text-teal-400 mb-3"
-                >배우 이름 수정</label
-              >
+              <!-- 역할 수정 -->
+              <div>
+                <label class="block text-sm font-bold text-teal-400 mb-3"
+                  >역할 (쉼표로 구분)</label
+                >
+                <input
+                  type="text"
+                  id="rolesInput"
+                  class="w-full px-4 py-3 bg-zinc-800 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
+                  placeholder="예: 엘사, 안나, 크리스토프"
+                />
+              </div>
 
-              <div class="p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg">
-                <p class="text-xs text-zinc-500 mb-3">
-                  공연 일정 시트에 잘못 인식되어있는 배우 이름을 한번에 수정합니다.
-                </p>
-                <div class="flex gap-3">
-                  <input
-                    type="text"
-                    id="findActorInput"
-                    placeholder="잘못 인식된 배우명 (예: 김민슈)"
-                    class="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
-                    onchange="checkAndAutoMergeActor()"
-                  />
-                  <span class="flex items-center text-zinc-500">→</span>
-                  <input
-                    type="text"
-                    id="replaceActorInput"
-                    placeholder="변경할 배우명 (예: 김민수)"
-                    class="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
-                    onchange="checkAndAutoMergeActor()"
-                  />
-                  <button
-                    onclick="replaceActorName()"
-                    class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-lg transition-all"
+              <!-- 배우 이름 수정 -->
+              <div>
+                <label class="block text-sm font-bold text-teal-400 mb-3"
+                  >배우 이름 수정</label
+                >
+
+                <div class="p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg">
+                  <p class="text-xs text-zinc-500 mb-3">
+                    공연 일정 시트에 잘못 인식되어있는 배우 이름을 한번에 수정합니다.
+                  </p>
+                  <div class="flex gap-3">
+                    <input
+                      type="text"
+                      id="findActorInput"
+                      placeholder="잘못 인식된 배우명 (예: 김민슈)"
+                      class="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
+                    />
+                    <span class="flex items-center text-zinc-500">→</span>
+                    <input
+                      type="text"
+                      id="replaceActorInput"
+                      placeholder="변경할 배우명 (예: 김민수)"
+                      class="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
+                    />
+                    <button
+                      onclick="replaceActorName()"
+                      class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-lg transition-all"
+                    >
+                      수정
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 일정 테이블 수정 -->
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <label class="block text-sm font-bold text-teal-400"
+                    >공연 일정</label
                   >
-                    수정
+                  <button
+                    onclick="addScheduleRow()"
+                    class="flex items-center gap-1 px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-md transition-all"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    행 추가
                   </button>
+                </div>
+                <div class="overflow-x-auto rounded-lg border border-zinc-700">
+                  <table class="w-full">
+                    <thead class="bg-zinc-800/80">
+                      <tr>
+                        <th
+                          class="px-3 py-2 text-left text-xs font-bold text-zinc-400 border-r border-zinc-700"
+                        >
+                          날짜
+                        </th>
+                        <th
+                          class="px-3 py-2 text-center text-xs font-bold text-zinc-400 border-r border-zinc-700"
+                        >
+                          요일
+                        </th>
+                        <th
+                          class="px-3 py-2 text-center text-xs font-bold text-zinc-400 border-r border-zinc-700"
+                        >
+                          시간
+                        </th>
+                        <th
+                          class="px-3 py-2 text-left text-xs font-bold text-zinc-400 border-r border-zinc-700"
+                        >
+                          배우 (쉼표 구분)
+                        </th>
+                        <th
+                          class="px-3 py-2 text-center text-xs font-bold text-zinc-400"
+                        >
+                          삭제
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="scheduleEditTable"></tbody>
+                  </table>
                 </div>
               </div>
             </div>
 
-            <!-- 일정 테이블 수정 -->
-            <div>
-              <div class="flex items-center justify-between mb-3">
-                <label class="block text-sm font-bold text-teal-400"
-                  >공연 일정</label
-                >
-                <button
-                  onclick="addScheduleRow()"
-                  class="flex items-center gap-1 px-3 py-1 bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-md transition-all"
-                >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
-                  행 추가
-                </button>
-              </div>
-              <div class="overflow-x-auto rounded-lg border border-zinc-700">
-                <table class="w-full">
-                  <thead class="bg-zinc-800/80">
-                    <tr>
-                      <th
-                        class="px-3 py-2 text-left text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                      >
-                        날짜
-                      </th>
-                      <th
-                        class="px-3 py-2 text-center text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                      >
-                        요일
-                      </th>
-                      <th
-                        class="px-3 py-2 text-center text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                      >
-                        시간
-                      </th>
-                      <th
-                        class="px-3 py-2 text-left text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                      >
-                        배우 (쉼표 구분)
-                      </th>
-                      <th
-                        class="px-3 py-2 text-center text-xs font-bold text-zinc-400"
-                      >
-                        삭제
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody id="scheduleEditTable"></tbody>
-                </table>
-              </div>
-            </div>
+
+
           </div>
         </div>
 
@@ -554,7 +565,7 @@
           <div class="mb-8 flex items-center justify-between">
             <div class="flex items-center gap-4">
               <button
-                onclick="showHomeSection()"
+                onclick="showSection('home')"
                 class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-md text-zinc-300 font-medium transition-all"
               >
                 <svg
@@ -973,20 +984,166 @@
     </div>
 
     <script>
-      // ===== 기존 코드 변수들 =====
+      // ===== 상태 변수 =====
       let castingData = null;
       let selectedActors = [];
       let allActors = [];
       let actorStats = {};
-      let currentPhaseFilter = 'all'; // 차수 필터
+      let currentPhaseFilter = 'all';
 
-      // ===== 새로 추가된 변수들 =====
       let shows = {};
       let currentShowId = null;
       let tempCastingData = null;
       let tempAdditionalData = null;
       let pendingDeleteShowId = null;
-      let similarActorMappings = {}; // 유사한 배우 이름 매핑
+      let similarActorMappings = {};
+      let currentUploadedImageData = null;
+
+      // ===== 로딩 프로그레스바 =====
+      let _progressTimer = null;
+      let _progressValue = 0;
+
+      // 예상 소요 시간(ms) 기반으로 프로그레스바를 부드럽게 진행시킵니다.
+      // 실제 완료 전까지는 95%에서 멈추고, finishProgress()로 100%까지 채웁니다.
+      const PROGRESS_STEPS = [
+        { until: 10,  label: '이미지 전송 중...',    duration: 2000  },
+        { until: 30,  label: 'AI 모델 분석 중...',   duration: 6000  },
+        { until: 60,  label: '스케줄 인식 중...',    duration: 10000 },
+        { until: 80,  label: '배우 정보 추출 중...', duration: 8000  },
+        { until: 95,  label: '마무리 처리 중...',    duration: 6000  },
+      ];
+
+      function startProgress() {
+        stopProgress();
+        _progressValue = 0;
+        setProgress(0, '분석 준비 중...');
+
+        let stepIndex = 0;
+
+        function runStep() {
+          if (stepIndex >= PROGRESS_STEPS.length) return;
+          const step = PROGRESS_STEPS[stepIndex];
+          const startVal = _progressValue;
+          const endVal = step.until;
+          const startTime = performance.now();
+
+          function tick(now) {
+            const elapsed = now - startTime;
+            const ratio = Math.min(elapsed / step.duration, 1);
+            // easeOutCubic으로 자연스럽게
+            const eased = 1 - Math.pow(1 - ratio, 3);
+            _progressValue = startVal + (endVal - startVal) * eased;
+            setProgress(_progressValue, step.label);
+
+            if (ratio < 1) {
+              _progressTimer = requestAnimationFrame(tick);
+            } else {
+              stepIndex++;
+              _progressTimer = requestAnimationFrame(runStep);
+            }
+          }
+          _progressTimer = requestAnimationFrame(tick);
+        }
+
+        runStep();
+      }
+
+      function finishProgress() {
+        stopProgress();
+        // 100%까지 빠르게 채우기
+        const startVal = _progressValue;
+        const startTime = performance.now();
+        const duration = 400;
+
+        function tick(now) {
+          const ratio = Math.min((now - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - ratio, 3);
+          _progressValue = startVal + (100 - startVal) * eased;
+          setProgress(_progressValue, '완료!');
+          if (ratio < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function stopProgress() {
+        if (_progressTimer) {
+          cancelAnimationFrame(_progressTimer);
+          _progressTimer = null;
+        }
+      }
+
+      function setProgress(value, label) {
+        const bar = document.getElementById('loadingProgressBar');
+        const pct = document.getElementById('loadingPercentText');
+        const status = document.getElementById('loadingStatusText');
+        if (bar) bar.style.width = `${Math.min(value, 100).toFixed(1)}%`;
+        if (pct) pct.textContent = `${Math.min(Math.round(value), 100)}%`;
+        if (status) status.textContent = label;
+      }
+
+      // ===== 공통 유틸리티 =====
+
+      /**
+       * 배우 이름에서 특수기호/태그를 제거하고 정규화된 이름을 반환합니다.
+       * 동일한 정규식이 여러 곳에 중복되어 있던 것을 하나로 통합했습니다.
+       */
+      /**
+       * textarea를 내용 높이에 맞게 자동 조절합니다.
+       */
+      /**
+       * textarea rows를 텍스트 줄 수에 맞게 설정합니다.
+       * scrollHeight 방식은 hidden 부모 안에서 0을 반환하는 타이밍 문제가 있어
+       * 텍스트 내용을 직접 줄바꿈으로 분리해 rows를 계산합니다.
+       */
+      function autoResizeTextarea(el) {
+        const count = el.value ? el.value.split(',').length : 1;
+        el.rows = Math.max(1, Math.ceil(count / 3));
+      }
+
+      function cleanActorName(name) {
+        return name
+          .replace(/[●○•◉◎⑩㊗]+/g, '')
+          .replace(/\s*\(첫공\)/g, '')
+          .replace(/\s*\(막공\)/g, '')
+          .trim();
+      }
+
+      /**
+       * 한글로만 이루어진 유효한 배우 이름인지 검사합니다.
+       */
+      function isValidKoreanName(name) {
+        return /^[가-힣]+$/.test(name) && name.length > 1;
+      }
+
+      /**
+       * 제외할 키워드 목록입니다.
+       */
+      const EXCLUDE_KEYWORDS = new Set([
+        "공연없음", "공연 없음", "없음", "x", "-", "휴무", "공연x", "공연 x",
+      ]);
+
+      /**
+       * 날짜 문자열("03.15 (금)" 형식)을 Date 객체로 변환합니다.
+       * 연말~연초 공연(예: 12월~1월)의 정렬이 뒤집히지 않도록
+       * 현재 달보다 많이 앞선 월은 다음 해로 처리합니다.
+       */
+      function parseDateString(dateStr) {
+        const match = dateStr.match(/(\d+)\.(\d+)/);
+        if (!match) return new Date();
+
+        const month = parseInt(match[1]);
+        const day = parseInt(match[2]);
+        const now = new Date();
+        let year = now.getFullYear();
+
+        // 현재 달보다 6개월 이상 앞선 경우 다음 해로 간주
+        // (예: 현재가 11월인데 날짜가 2월이면 → 내년 2월)
+        if (month < now.getMonth() + 1 - 5) {
+          year += 1;
+        }
+
+        return new Date(year, month - 1, day);
+      }
 
       // ===== DOM 요소 참조 =====
       const homeSection = document.getElementById("homeSection");
@@ -1019,6 +1176,25 @@
       const deleteShowName = document.getElementById("deleteShowName");
       const rolesInput = document.getElementById("rolesInput");
       const scheduleEditTable = document.getElementById("scheduleEditTable");
+      const uploadedImageContainer = document.getElementById("uploadedImageContainer");
+      const uploadedImage = document.getElementById("uploadedImage");
+
+      // ===== 화면 전환 =====
+
+      /**
+       * 섹션 ID 목록. 새 섹션 추가 시 여기에만 추가하면 됩니다.
+       */
+      const ALL_SECTIONS = ['home', 'upload', 'loading', 'confirm', 'data'];
+
+      /**
+       * 지정한 섹션만 보이고 나머지는 모두 숨깁니다.
+       * 기존에 각 showXxxSection() 함수마다 반복되던 classList 토글을 하나로 통합했습니다.
+       */
+      function showSection(name) {
+        ALL_SECTIONS.forEach(id => {
+          document.getElementById(`${id}Section`).classList.toggle('hidden', id !== name);
+        });
+      }
 
       // ===== 초기화 =====
       loadShows();
@@ -1027,22 +1203,18 @@
       // ===== LocalStorage 관리 =====
       function loadShows() {
         const saved = localStorage.getItem("castingShows");
-        if (saved) {
-          shows = JSON.parse(saved);
-          
-          // 모든 공연의 schedule에 phase 정보가 없으면 기본값 1 할당
-          Object.keys(shows).forEach(showId => {
-            if (shows[showId].data && shows[showId].data.schedule) {
-              shows[showId].data.schedule.forEach(show => {
-                if (!show.phase) {
-                  show.phase = 1; // 기본값: 1차
-                }
-              });
-            }
+        if (!saved) return;
+
+        shows = JSON.parse(saved);
+
+        // 기존 데이터에 phase 기본값 보정
+        Object.values(shows).forEach(show => {
+          show.data.schedule.forEach(item => {
+            if (!item.phase) item.phase = 1;
           });
-          
-          saveShows(); // 수정된 데이터를 다시 저장
-        }
+        });
+
+        saveShows();
       }
 
       function saveShows() {
@@ -1058,135 +1230,120 @@
           emptyState.classList.remove("hidden");
           showsList.classList.add("hidden");
           addShowButton.classList.add("hidden");
+          addShowButton.style.display = '';
         } else {
           emptyState.classList.add("hidden");
           showsList.classList.remove("hidden");
+          // hidden 제거 + flex 명시적으로 설정 (hidden/flex 동시 선언 문제 해결)
           addShowButton.classList.remove("hidden");
+          addShowButton.style.display = 'flex';
 
           showsList.innerHTML = showsArray
             .map(
               ([showId, show]) => `
-          <div class="bg-zinc-900/50 border-2 border-zinc-800 hover:border-teal-700/50 rounded-xl p-6 cursor-pointer transition-all hover:shadow-lg hover:shadow-teal-700/20"
-            onclick="viewShow('${showId}')">
-            <div class="flex justify-between items-start mb-4">
-              <h3 class="text-xl font-black text-white">${show.name}</h3>
-              <button 
-                class="delete-show-btn p-2 hover:bg-red-900/30 rounded-lg transition-colors"
-                data-show-id="${showId}">
-                <svg class="w-5 h-5 text-zinc-600 hover:text-red-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
-            </div>
-            <div class="space-y-2 text-sm text-zinc-400">
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span>총 ${show.data.schedule.length}회 공연</span>
+              <div class="bg-zinc-900/50 border-2 border-zinc-800 hover:border-teal-700/50 rounded-xl p-6 cursor-pointer transition-all hover:shadow-lg hover:shadow-teal-700/20"
+                data-show-id="${showId}"
+                data-action="view">
+                <div class="flex justify-between items-start mb-4">
+                  <h3 class="text-xl font-black text-white">${show.name}</h3>
+                  <button 
+                    class="p-2 hover:bg-red-900/30 rounded-lg transition-colors"
+                    data-show-id="${showId}"
+                    data-action="delete">
+                    <svg class="w-5 h-5 text-zinc-600 hover:text-red-400 transition-colors pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+                <div class="space-y-2 text-sm text-zinc-400">
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="pointer-events-none">총 ${show.data.schedule.length}회 공연</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span class="pointer-events-none">${show.data.roles.join(", ")}</span>
+                  </div>
+                </div>
               </div>
-              <div class="flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-                <span>${show.data.roles.join(", ")}</span>
-              </div>
-            </div>
-          </div>
-        `,
+            `,
             )
             .join("");
-
-          setTimeout(() => {
-            document.querySelectorAll(".delete-show-btn").forEach((btn) => {
-              btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                const showId = btn.dataset.showId;
-                console.log("Deleting show ID:", showId);
-                deleteShowFromHome(showId);
-              });
-            });
-          }, 100);
         }
       }
 
-      // ===== 화면 전환 함수들 =====
-      function showHomeSection() {
-        homeSection.classList.remove("hidden");
-        uploadSection.classList.add("hidden");
-        loadingSection.classList.add("hidden");
-        confirmSection.classList.add("hidden");
-        dataSection.classList.add("hidden");
-        document.getElementById("addMoreScheduleBtn")?.classList.add("hidden");
+      /**
+       * 이벤트 위임 방식으로 공연 카드 클릭을 처리합니다.
+       * 기존에 setTimeout + querySelectorAll로 이벤트를 붙이던 방식을 교체했습니다.
+       * 이 방식은 innerHTML 갱신 이후에도 항상 정상 동작합니다.
+       */
+      showsList.addEventListener('click', (e) => {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+
+        const action = target.dataset.action;
+        const showId = target.dataset.showId;
+
+        if (action === 'delete') {
+          e.stopPropagation();
+          deleteShowFromHome(showId);
+        } else if (action === 'view') {
+          viewShow(showId);
+        }
+      });
+
+      // ===== 홈 이동 (기존 showHomeSection 역할) =====
+      function goHome() {
+        document.getElementById("addMoreScheduleBtn")?.remove();
         currentShowId = null;
         castingData = null;
         selectedActors = [];
+        showSection('home');
         renderHome();
       }
 
-      function showUploadSection() {
-        homeSection.classList.add("hidden");
-        uploadSection.classList.remove("hidden");
-        loadingSection.classList.add("hidden");
-        confirmSection.classList.add("hidden");
-        dataSection.classList.add("hidden");
-        fileInput.value = "";
-      }
-
-      function showConfirmSection() {
-        homeSection.classList.add("hidden");
-        uploadSection.classList.add("hidden");
-        loadingSection.classList.add("hidden");
-        confirmSection.classList.remove("hidden");
-        dataSection.classList.add("hidden");
-
-        if (currentShowId && shows[currentShowId]) {
-          showNameEditInput.value = shows[currentShowId].name;
-        } else {
-          showNameEditInput.value = "";
-        }
-        rolesInput.value = tempCastingData.roles.join(", ");
-        renderScheduleEditTable();
-      }
-
-      // 수정 화면에서 데이터 표시 화면으로 돌아가기
-      function showDataSection() {
+      // confirmSection의 뒤로가기 버튼 처리
+      function showDataSectionFromConfirm() {
         tempCastingData = null;
-        viewShow(currentShowId);
+        if (currentShowId) {
+          // 기존 공연 수정 중이었으면 → 데이터 화면으로
+          viewShow(currentShowId);
+        } else {
+          // 최초 등록 중이었으면 → 이미지 업로드 화면으로
+          currentUploadedImageData = null;
+          fileInput.value = "";
+          showSection('upload');
+        }
       }
 
+      // ===== 공연 보기 =====
       function viewShow(showId) {
         currentShowId = showId;
         castingData = shows[showId].data;
         currentShowTitle.textContent = shows[showId].name;
 
-        selectedActors = []; //배우선택 초기화
-        currentPhaseFilter = 'all'; // 차수 필터 초기화
+        selectedActors = [];
+        currentPhaseFilter = 'all';
 
         processData();
         showData();
         updateFilterUI();
-        filterByPhase('all'); // 차수 필터 초기화 UI
+        filterByPhase('all');
 
-        homeSection.classList.add("hidden");
-        uploadSection.classList.add("hidden");
-        loadingSection.classList.add("hidden");
-        confirmSection.classList.add("hidden");
-        dataSection.classList.remove("hidden");
-        document.getElementById("addMoreScheduleBtn")?.classList.remove("hidden");
+        showSection('data');
       }
 
       // ===== 공연 삭제 =====
       function deleteShowFromHome(showId) {
-        console.log("deleteShowFromHome called with:", showId);
-
         const show = shows[showId];
         if (!show) {
-          console.error("Show not found!");
           alert("공연을 찾을 수 없습니다.");
           return;
         }
@@ -1199,21 +1356,15 @@
       function confirmDelete() {
         if (!pendingDeleteShowId) return;
 
-        console.log("Deleting show:", pendingDeleteShowId);
         const wasViewingThisShow = currentShowId === pendingDeleteShowId;
-
         delete shows[pendingDeleteShowId];
         saveShows();
-        console.log(
-          "After delete, remaining shows:",
-          Object.keys(shows).length,
-        );
 
         deleteModal.classList.add("hidden");
         pendingDeleteShowId = null;
 
         if (wasViewingThisShow) {
-          showHomeSection();
+          goHome();
         } else {
           renderHome();
         }
@@ -1224,33 +1375,46 @@
         pendingDeleteShowId = null;
       }
 
-      document
-        .getElementById("deleteFromConfirmBtn")
-        .addEventListener("click", () => {
-          if (currentShowId) {
-            deleteShowFromHome(currentShowId);
-          } else {
-            tempCastingData = null;
-            showHomeSection();
-          }
-        });
+      document.getElementById("deleteFromConfirmBtn").addEventListener("click", () => {
+        if (currentShowId) {
+          deleteShowFromHome(currentShowId);
+        } else {
+          tempCastingData = null;
+          goHome();
+        }
+      });
 
       editShowBtn.addEventListener("click", () => {
-        if (currentShowId) {
-          tempCastingData = JSON.parse(
-            JSON.stringify(shows[currentShowId].data),
-          );
-          showConfirmSection();
-        }
+        if (!currentShowId) return;
+        tempCastingData = JSON.parse(JSON.stringify(shows[currentShowId].data));
+        openConfirmSection();
       });
 
       deleteShowBtn.addEventListener("click", () => {
-        if (currentShowId) {
-          deleteShowFromHome(currentShowId);
-        }
+        if (currentShowId) deleteShowFromHome(currentShowId);
       });
 
-      // ===== 추가 스케줄 업로드 기능 =====
+      // ===== confirmSection 열기 =====
+      function openConfirmSection() {
+        if (currentUploadedImageData) {
+          uploadedImage.src = currentUploadedImageData;
+          uploadedImageContainer.classList.remove("hidden");
+        } else {
+          uploadedImageContainer.classList.add("hidden");
+        }
+
+        // 항상 뒤로가기 버튼 표시
+        document.getElementById("confirmBackBtn").classList.remove("hidden");
+
+        showNameEditInput.value = currentShowId && shows[currentShowId]
+          ? shows[currentShowId].name
+          : "";
+        rolesInput.value = tempCastingData.roles.join(", ");
+        renderScheduleEditTable();
+        showSection('confirm');
+      }
+
+      // ===== 추가 스케줄 업로드 =====
       function addMoreSchedule() {
         if (!currentShowId) {
           alert("공연을 먼저 선택해주세요.");
@@ -1269,16 +1433,13 @@
             return;
           }
 
-          dataSection.classList.add("hidden");
-          loadingSection.classList.remove("hidden");
+          showSection('loading');
+          startProgress();
 
           const reader = new FileReader();
           reader.onload = async (e) => {
             const dataUrl = e.target.result;
-            const mediaType = dataUrl.substring(
-              dataUrl.indexOf(":") + 1,
-              dataUrl.indexOf(";"),
-            );
+            const mediaType = dataUrl.substring(dataUrl.indexOf(":") + 1, dataUrl.indexOf(";"));
             const base64Data = dataUrl.split(",")[1];
             await processAdditionalImage(base64Data, mediaType);
           };
@@ -1287,146 +1448,107 @@
         additionalFileInput.click();
       }
 
-      // 추가 이미지 처리 - 차수 선택 후 저장
       async function processAdditionalImage(imageData, mediaType) {
         try {
           const response = await fetch("/api/analyze", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              imageData: imageData,
-              mediaType: mediaType,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ imageData, mediaType }),
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.error("API Error Response:", errorData);
-            throw new Error(
-              `API Error: ${errorData.error?.message || response.statusText}`,
-            );
+            throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
           }
 
           const data = await response.json();
-          console.log("API Response:", data);
 
           if (!data.content || !Array.isArray(data.content)) {
             throw new Error("응답 형식이 올바르지 않습니다.");
           }
-
           if (data.stop_reason === "max_tokens") {
-            throw new Error(
-              "응답이 너무 길어 중간에 잘렸습니다. 이미지를 분할하여 업로드해주세요.",
-            );
+            throw new Error("응답이 너무 길어 중간에 잘렸습니다. 이미지를 분할하여 업로드해주세요.");
           }
 
-          const text = data.content
-            .map((item) => item.text || "")
-            .join("\n")
-            .trim();
-          const cleanText = text.replace(/```json|```/g, "").trim();
-          const newCastingData = JSON.parse(cleanText);
+          const text = data.content.map(item => item.text || "").join("\n").trim();
+          const newCastingData = JSON.parse(text.replace(/```json|```/g, "").trim());
 
-          // 스케줄 데이터 정제
           cleanScheduleData(newCastingData);
 
-          if (newCastingData.schedule && newCastingData.schedule.length > 0) {
-            // 기존 배우 목록과 비교하여 유사한 이름 찾기
-            const existingActors = new Set();
-            shows[currentShowId].data.schedule.forEach(show => {
-              show.cast.forEach(actor => {
-                const cleanActor = actor
-                  .replace(/[●○•◉◎⑩]/g, "")
-                  .replace(/\s*\(첫공\)/g, "")
-                  .replace(/\s*\(막공\)/g, "")
-                  .trim();
-                if (cleanActor) existingActors.add(cleanActor);
-              });
-            });
-
-            const newActors = new Set();
-            newCastingData.schedule.forEach(show => {
-              show.cast.forEach(actor => {
-                const cleanActor = actor
-                  .replace(/[●○•◉◎⑩]/g, "")
-                  .replace(/\s*\(첫공\)/g, "")
-                  .replace(/\s*\(막공\)/g, "")
-                  .trim();
-                if (cleanActor) newActors.add(cleanActor);
-              });
-            });
-
-            similarActorMappings = findSimilarActors(Array.from(newActors), Array.from(existingActors));
-
-            if (Object.keys(similarActorMappings).length > 0) {
-              // 유사한 배우가 있으면 병합 모달 표시
-              tempAdditionalData = newCastingData;
-              loadingSection.classList.add("hidden");
-              openMergeActorModal(); // 모달 리스트 생성
-              document.getElementById("mergeActorModal").classList.remove("hidden");
-            } else {
-              // 유사한 배우가 없으면 바로 차수 선택 모달
-              tempAdditionalData = newCastingData;
-              loadingSection.classList.add("hidden");
-              document.getElementById("phaseModal").classList.remove("hidden");
-            }
-          } else {
+          if (!newCastingData.schedule || newCastingData.schedule.length === 0) {
             throw new Error("새로운 일정을 찾을 수 없습니다.");
           }
+
+          // 기존 배우 목록 수집
+          const existingActors = new Set();
+          shows[currentShowId].data.schedule.forEach(show => {
+            show.cast.forEach(actor => {
+              const clean = cleanActorName(actor);
+              if (clean) existingActors.add(clean);
+            });
+          });
+
+          // 신규 배우 목록 수집
+          const newActors = new Set();
+          newCastingData.schedule.forEach(show => {
+            show.cast.forEach(actor => {
+              const clean = cleanActorName(actor);
+              if (clean) newActors.add(clean);
+            });
+          });
+
+          similarActorMappings = findSimilarActors(Array.from(newActors), Array.from(existingActors));
+
+          tempAdditionalData = newCastingData;
+          // 프로그레스 100% 완료 후 모달 표시 (로딩 화면은 모달 뒤에 유지)
+          finishProgress();
+
+          if (Object.keys(similarActorMappings).length > 0) {
+            openMergeActorModal();
+            document.getElementById("mergeActorModal").classList.remove("hidden");
+          } else {
+            document.getElementById("phaseModal").classList.remove("hidden");
+          }
+
         } catch (error) {
           console.error("Processing error:", error);
-          alert(
-            `이미지 처리 중 오류가 발생했습니다.\n\n에러: ${error.message}\n\n개발자 콘솔을 확인해주세요.`,
-          );
-          loadingSection.classList.add("hidden");
+          stopProgress();
+          alert(`이미지 처리 중 오류가 발생했습니다.\n\n에러: ${error.message}`);
           viewShow(currentShowId);
         }
       }
 
-      // 차수 선택 후 저장
       function confirmPhaseSelection(phase) {
         document.getElementById("phaseModal").classList.add("hidden");
-        
         if (!tempAdditionalData) return;
-        
-        // 선택된 차수를 모든 스케줄에 추가
-        tempAdditionalData.schedule.forEach(show => {
-          show.phase = phase;
-        });
-        
-        // 기존 schedule에 새로운 스케줄 추가
+
+        tempAdditionalData.schedule.forEach(show => { show.phase = phase; });
+
         shows[currentShowId].data.schedule = [
           ...shows[currentShowId].data.schedule,
-          ...tempAdditionalData.schedule
+          ...tempAdditionalData.schedule,
         ];
-        
-        // 전체 schedule을 시간순으로 정렬 (차수별로는 유지)
+
+        // 차수 → 날짜 순 정렬
         shows[currentShowId].data.schedule.sort((a, b) => {
-          // 먼저 차수로 정렬
-          if (a.phase !== b.phase) {
-            return a.phase - b.phase;
-          }
-          // 같은 차수 내에서는 날짜로 정렬
-          const dateA = parseDateString(a.date);
-          const dateB = parseDateString(b.date);
-          return dateA - dateB;
+          if (a.phase !== b.phase) return a.phase - b.phase;
+          return parseDateString(a.date) - parseDateString(b.date);
         });
-        
+
         saveShows();
         tempAdditionalData = null;
-        
-        alert(`새로운 스케줄이 추가되었습니다!`);
+
+        alert("새로운 스케줄이 추가되었습니다!");
         viewShow(currentShowId);
       }
 
       function cancelPhaseSelection() {
         document.getElementById("phaseModal").classList.add("hidden");
         tempAdditionalData = null;
+        viewShow(currentShowId); // 로딩 화면 닫고 데이터 화면으로
       }
 
-      // 배우 병합 모달 열기
+      // ===== 배우 병합 모달 =====
       function openMergeActorModal() {
         const mergeActorList = document.getElementById("mergeActorList");
         mergeActorList.innerHTML = Object.entries(similarActorMappings)
@@ -1451,45 +1573,30 @@
           .join("");
       }
 
-      // 배우 병합 확인
       function confirmMergeActors() {
-        // 사용자 선택을 반영한 매핑 업데이트
         Object.keys(similarActorMappings).forEach(newActor => {
           const selectEl = document.getElementById(`select_${newActor}`);
-          if (selectEl) {
-            const selectedValue = selectEl.value;
-            if (selectedValue === "keep") {
-              delete similarActorMappings[newActor];
-            } else {
-              similarActorMappings[newActor] = selectedValue;
-            }
+          if (selectEl?.value === "keep") {
+            delete similarActorMappings[newActor];
+          } else if (selectEl) {
+            similarActorMappings[newActor] = selectEl.value;
           }
         });
 
-        // tempAdditionalData에서 배우 이름 변경
         tempAdditionalData.schedule.forEach(show => {
           show.cast = show.cast.map(actor => {
-            const cleanActor = actor
-              .replace(/[●○•◉◎⑩]/g, "")
-              .replace(/\s*\(첫공\)/g, "")
-              .replace(/\s*\(막공\)/g, "")
-              .trim();
-
-            if (similarActorMappings[cleanActor]) {
-              return actor.replace(cleanActor, similarActorMappings[cleanActor]);
-            }
-            return actor;
+            const clean = cleanActorName(actor);
+            return similarActorMappings[clean]
+              ? actor.replace(clean, similarActorMappings[clean])
+              : actor;
           });
         });
 
         document.getElementById("mergeActorModal").classList.add("hidden");
         similarActorMappings = {};
-
-        // 차수 선택 모달로 이동
         document.getElementById("phaseModal").classList.remove("hidden");
       }
 
-      // 배우 병합 취소
       function cancelMergeActors() {
         document.getElementById("mergeActorModal").classList.add("hidden");
         tempAdditionalData = null;
@@ -1502,17 +1609,15 @@
         dropZone.classList.add("border-teal-400", "bg-teal-500/20");
       });
 
-      dropZone.addEventListener("dragleave", (e) => {
-        e.preventDefault();
+      dropZone.addEventListener("dragleave", () => {
         dropZone.classList.remove("border-teal-400", "bg-teal-500/20");
       });
 
       dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
         dropZone.classList.remove("border-teal-400", "bg-teal-500/20");
-
         const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith("image/")) {
+        if (file?.type.startsWith("image/")) {
           handleFile(file);
         } else {
           alert("이미지 파일만 업로드할 수 있습니다.");
@@ -1521,9 +1626,7 @@
 
       function handleFileSelect(event) {
         const file = event.target.files[0];
-        if (file) {
-          handleFile(file);
-        }
+        if (file) handleFile(file);
       }
 
       function handleFile(file) {
@@ -1532,182 +1635,113 @@
           return;
         }
 
-        uploadSection.classList.add("hidden");
-        loadingSection.classList.remove("hidden");
+        showSection('loading');
+        startProgress();
 
         const reader = new FileReader();
         reader.onload = async (e) => {
           const dataUrl = e.target.result;
-          const mediaType = dataUrl.substring(
-            dataUrl.indexOf(":") + 1,
-            dataUrl.indexOf(";"),
-          );
+          const mediaType = dataUrl.substring(dataUrl.indexOf(":") + 1, dataUrl.indexOf(";"));
           const base64Data = dataUrl.split(",")[1];
+          currentUploadedImageData = dataUrl;
           await processImage(base64Data, mediaType);
         };
         reader.readAsDataURL(file);
       }
 
-      // 이미지 처리 (동그라미 감지 및 첫공/막공 처리 추가)
       async function processImage(imageData, mediaType) {
         try {
           const response = await fetch("/api/analyze", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              imageData: imageData,
-              mediaType: mediaType,
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ imageData, mediaType }),
           });
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.error("API Error Response:", errorData);
-            throw new Error(
-              `API Error: ${errorData.error?.message || response.statusText}`,
-            );
+            throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
           }
 
           const data = await response.json();
-          console.log("API Response:", data);
 
           if (!data.content || !Array.isArray(data.content)) {
             throw new Error("응답 형식이 올바르지 않습니다.");
           }
-
           if (data.stop_reason === "max_tokens") {
-            throw new Error(
-              "응답이 너무 길어 중간에 잘렸습니다. 이미지를 분할하여 업로드해주세요.",
-            );
+            throw new Error("응답이 너무 길어 중간에 잘렸습니다. 이미지를 분할하여 업로드해주세요.");
           }
 
-          const text = data.content
-            .map((item) => item.text || "")
-            .join("\n")
-            .trim();
-          const cleanText = text.replace(/```json|```/g, "").trim();
-          tempCastingData = JSON.parse(cleanText);
+          const text = data.content.map(item => item.text || "").join("\n").trim();
+          tempCastingData = JSON.parse(text.replace(/```json|```/g, "").trim());
 
-          // 역할에서 날짜, 요일, 시간 제거
-          const excludedRoles = ["날짜", "요일", "시간"];
-          tempCastingData.roles = tempCastingData.roles.filter(
-            (role) =>
-              role && !excludedRoles.some((excluded) => role === excluded),
-          );
+          // 역할에서 날짜/요일/시간 항목 제거
+          const EXCLUDED_ROLES = new Set(["날짜", "요일", "시간"]);
+          tempCastingData.roles = tempCastingData.roles.filter(r => r && !EXCLUDED_ROLES.has(r));
 
-          // 스케줄 데이터 정제
           cleanScheduleData(tempCastingData);
 
-          loadingSection.classList.add("hidden");
-          
-          // 차수 선택 모달 표시 (첫 저장용 - savePhaseModal)
+          // 프로그레스 100% 완료 후 모달 표시 (로딩 화면은 모달 뒤에 그대로 유지)
+          finishProgress();
           document.getElementById("savePhaseModal").classList.remove("hidden");
+
         } catch (error) {
           console.error("Processing error:", error);
-          alert(
-            `이미지 처리 중 오류가 발생했습니다.\n\n에러: ${error.message}\n\n개발자 콘솔을 확인해주세요.`,
-          );
-          loadingSection.classList.add("hidden");
-          uploadSection.classList.remove("hidden");
+          stopProgress();
+          alert(`이미지 처리 중 오류가 발생했습니다.\n\n에러: ${error.message}`);
+          showSection('upload');
         }
       }
 
-      // 첫 번째 이미지 업로드 시 차수 선택 후 저장
       function confirmSavePhase(phase) {
         document.getElementById("savePhaseModal").classList.add("hidden");
-        
-        // 모든 스케줄에 선택한 차수 적용
-        tempCastingData.schedule.forEach(show => {
-          show.phase = phase;
-        });
-        
-        // 수정 화면 표시
-        showConfirmSection();
+        tempCastingData.schedule.forEach(show => { show.phase = phase; });
+        openConfirmSection();
       }
 
       function cancelSavePhase() {
         document.getElementById("savePhaseModal").classList.add("hidden");
+        stopProgress();
+        showSection('upload');
       }
 
-      // 스케줄 데이터 정제 함수 (동그라미 제거 및 한글 이름만 필터링)
+      // ===== 스케줄 데이터 정제 =====
       function cleanScheduleData(data) {
-        if (!data.schedule || data.schedule.length === 0) return;
+        if (!data.schedule?.length) return;
 
-        // 한글 이름 검증 함수
-        function isValidKoreanName(name) {
-          const koreanRegex = /^[가-힣]+$/;
-          return koreanRegex.test(name);
-        }
-
-        // 동그라미 제거 및 한글 이름만 필터링
-        data.schedule.forEach((show) => {
+        // confirmSection(수정 화면)에 보여줄 데이터이므로 강한 필터 없이
+        // 특수기호/태그 제거만 적용합니다. 빈 문자열만 걸러냅니다.
+        // (isValidKoreanName 필터는 저장 후 processData()에서만 적용)
+        data.schedule.forEach(show => {
           show.cast = show.cast
-            .map((actorName) => {
-              // 동그라미와 특수 기호 제거
-              const cleanName = actorName.replace(/[●○•◉◎⑩㊗]+/g, "").trim();
-              return cleanName;
-            })
-            .filter((cleanName) => {
-              // 한글 이름만 남기기
-              return isValidKoreanName(cleanName) && cleanName.length > 1;
-            });
+            .map(cleanActorName)
+            .filter(name => name.length > 0);
         });
 
-        // 빈 캐스트 제거
-        data.schedule = data.schedule.filter((show) => show.cast.length > 0);
-        
-        // 시간순으로 정렬
-        data.schedule.sort((a, b) => {
-          const dateA = parseDateString(a.date);
-          const dateB = parseDateString(b.date);
-          return dateA - dateB;
-        });
+        // 날짜순 정렬 (빈 캐스트 행은 유지 - 사용자가 직접 확인/삭제)
+        data.schedule.sort((a, b) => parseDateString(a.date) - parseDateString(b.date));
       }
 
-      // 날짜 문자열을 Date 객체로 변환하는 헬퍼 함수
-      function parseDateString(dateStr) {
-        // "03.15 (금)" 형식을 파싱
-        const match = dateStr.match(/(\d+)\.(\d+)/);
-        if (match) {
-          const month = parseInt(match[1]);
-          const day = parseInt(match[2]);
-          const currentYear = new Date().getFullYear();
-          return new Date(currentYear, month - 1, day);
-        }
-        return new Date();
-      }
-
-      // 두 문자열의 유사도를 계산하는 함수 (Levenshtein distance)
+      // ===== 유사 배우 이름 탐색 (Levenshtein) =====
       function calculateSimilarity(str1, str2) {
         const len1 = str1.length;
         const len2 = str2.length;
-        const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
-
-        for (let i = 0; i <= len1; i++) matrix[0][i] = i;
-        for (let j = 0; j <= len2; j++) matrix[j][0] = j;
+        const matrix = Array.from({ length: len2 + 1 }, (_, j) =>
+          Array.from({ length: len1 + 1 }, (_, i) => (j === 0 ? i : i === 0 ? j : 0))
+        );
 
         for (let j = 1; j <= len2; j++) {
           for (let i = 1; i <= len1; i++) {
-            const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
-            matrix[j][i] = Math.min(
-              matrix[j][i - 1] + 1,
-              matrix[j - 1][i] + 1,
-              matrix[j - 1][i - 1] + indicator
-            );
+            matrix[j][i] = str1[i - 1] === str2[j - 1]
+              ? matrix[j - 1][i - 1]
+              : Math.min(matrix[j][i - 1], matrix[j - 1][i], matrix[j - 1][i - 1]) + 1;
           }
         }
 
-        const distance = matrix[len2][len1];
-        const maxLen = Math.max(len1, len2);
-        return 1 - (distance / maxLen); // 0~1 사이의 유사도
+        return 1 - matrix[len2][len1] / Math.max(len1, len2);
       }
 
-      // 유사한 배우 이름 찾기
       function findSimilarActors(newActors, existingActors, threshold = 0.6) {
         const similar = {};
-
         newActors.forEach(newActor => {
           let bestMatch = null;
           let bestSimilarity = threshold;
@@ -1720,176 +1754,111 @@
             }
           });
 
-          if (bestMatch) {
-            similar[newActor] = bestMatch;
-          }
+          if (bestMatch) similar[newActor] = bestMatch;
         });
-
         return similar;
-      }
-
-      // 입력 필드 변경 시 동일한 이름이면 자동 병합
-      function checkAndAutoMergeActor() {
-        const newActorName = document.getElementById("findActorInput").value.trim();
-        const mergeActorName = document.getElementById("replaceActorInput").value.trim();
-
-        // 둘 다 입력되었고 동일하면 자동 병합
-        if (newActorName && mergeActorName && newActorName === mergeActorName) {
-          let replacedCount = 0;
-
-          tempCastingData.schedule.forEach((show) => {
-            show.cast = show.cast.map((actor) => {
-              const cleanName = actor
-                .replace(/\s*\(첫공\)/g, "")
-                .replace(/\s*\(막공\)/g, "")
-                .trim();
-
-              if (cleanName === newActorName) {
-                replacedCount++;
-                return mergeActorName;
-              }
-
-              return actor;
-            });
-          });
-
-          // 자동 수정 완료
-          if (replacedCount > 0) {
-            alert(`"${newActorName}"이(가) 자동으로 수정되었습니다.`);
-            renderScheduleEditTable();
-            document.getElementById("findActorInput").value = "";
-            document.getElementById("replaceActorInput").value = "";
-          }
-        }
       }
 
       // ===== 배우 이름 일괄 변경 =====
       function replaceActorName() {
-        const newActorName = document.getElementById("findActorInput").value.trim();
-        const mergeActorName = document
-          .getElementById("replaceActorInput")
-          .value.trim();
+        const fromName = document.getElementById("findActorInput").value.trim();
+        const toName = document.getElementById("replaceActorInput").value.trim();
 
-        if (!newActorName) {
-          alert("잘못 인식된 배우명을 입력하세요.");
-          return;
-        }
-
-        if (!mergeActorName) {
-          alert("변경할 배우명을 입력하세요.");
-          return;
-        }
-
-        // 두 이름이 동일하면 팝업 없이 자동 병합
-        if (newActorName === mergeActorName) {
+        if (!fromName) { alert("잘못 인식된 배우명을 입력하세요."); return; }
+        if (!toName)   { alert("변경할 배우명을 입력하세요."); return; }
+        if (fromName === toName) {
           alert("동일한 이름입니다. 수정이 필요 없습니다.");
           document.getElementById("findActorInput").value = "";
           document.getElementById("replaceActorInput").value = "";
           return;
         }
 
-        let replacedCount = 0;
-
-        tempCastingData.schedule.forEach((show) => {
-          show.cast = show.cast.map((actor) => {
-            // 이름만 추출 (모든 태그 제거)
-            const cleanName = actor
-              .replace(/\s*\(첫공\)/g, "")
-              .replace(/\s*\(막공\)/g, "")
-              .trim();
-
-            if (cleanName === newActorName) {
-              replacedCount++;
-              return mergeActorName;
-            }
-
+        let count = 0;
+        tempCastingData.schedule.forEach(show => {
+          show.cast = show.cast.map(actor => {
+            if (cleanActorName(actor) === fromName) { count++; return toName; }
             return actor;
           });
         });
 
-        if (replacedCount > 0) {
-          alert(`"${newActorName}" → "${mergeActorName}" (${replacedCount}건 수정됨)`);
+        if (count > 0) {
+          alert(`"${fromName}" → "${toName}" (${count}건 수정됨)`);
           renderScheduleEditTable();
-
           document.getElementById("findActorInput").value = "";
           document.getElementById("replaceActorInput").value = "";
         } else {
-          alert(`"${newActorName}" 이름을 찾을 수 없습니다.`);
+          alert(`"${fromName}" 이름을 찾을 수 없습니다.`);
         }
       }
 
-      // ===== 일정 수정 테이블 렌더링 =====
+      // ===== 일정 수정 테이블 =====
       function renderScheduleEditTable() {
         scheduleEditTable.innerHTML = tempCastingData.schedule
-          .map(
-            (show, index) => `
-        <tr class="bg-zinc-900/30">
-          <td class="px-3 py-2 border-r border-zinc-700 w-28">
-            <input type="text" value="${show.date}" 
-              data-index="${index}" data-field="date"
-              class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500" />
-          </td>
-          <td class="px-3 py-2 border-r border-zinc-700 w-16">
-            <input type="text" value="${show.day}" 
-              data-index="${index}" data-field="day"
-              class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500" />
-          </td>
-          <td class="px-3 py-2 border-r border-zinc-700 w-20">
-            <input type="text" value="${show.time}" 
-              data-index="${index}" data-field="time"
-              class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500" />
-          </td>
-          <td class="px-3 py-2 border-r border-zinc-700">
-            <input type="text" value="${show.cast.join(", ")}" 
-              data-index="${index}" data-field="cast"
-              class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500" />
-          </td>
-          <td class="px-3 py-2 text-center w-16">
-            <button data-index="${index}" class="delete-schedule-btn p-1 hover:bg-red-900/30 rounded transition-colors">
-              <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </td>
-        </tr>
-      `,
-          )
+          .map((show, index) => `
+            <tr class="bg-zinc-900/30">
+              <td class="px-3 py-2 border-r border-zinc-700 w-28">
+                <input type="text" value="${show.date}" data-index="${index}" data-field="date"
+                  class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500" />
+              </td>
+              <td class="px-3 py-2 border-r border-zinc-700 w-16">
+                <input type="text" value="${show.day}" data-index="${index}" data-field="day"
+                  class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500" />
+              </td>
+              <td class="px-3 py-2 border-r border-zinc-700 w-20">
+                <input type="text" value="${show.time}" data-index="${index}" data-field="time"
+                  class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500" />
+              </td>
+              <td class="px-3 py-2 border-r border-zinc-700">
+                <textarea data-index="${index}" data-field="cast"
+                  rows="${Math.max(1, Math.ceil(show.cast.length / 3))}"
+                  class="schedule-field cast-textarea w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500 resize-y leading-5 min-h-[2rem]"
+                >${show.cast.join(", ")}</textarea>
+              </td>
+              <td class="px-3 py-2 text-center w-16">
+                <button data-index="${index}" class="delete-schedule-btn p-1 hover:bg-red-900/30 rounded transition-colors">
+                  <svg class="w-4 h-4 text-red-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          `)
           .join("");
 
-        document.querySelectorAll(".schedule-field").forEach((input) => {
-          input.addEventListener("change", (e) => {
-            const index = parseInt(e.target.dataset.index);
-            const field = e.target.dataset.field;
-            updateScheduleField(index, field, e.target.value);
-          });
-        });
-
-        document.querySelectorAll(".delete-schedule-btn").forEach((btn) => {
-          btn.addEventListener("click", (e) => {
-            const index = parseInt(btn.dataset.index);
-            deleteScheduleRow(index);
-          });
-        });
+        // 렌더링 직후 모든 cast textarea 높이 초기화
+        scheduleEditTable.querySelectorAll('.cast-textarea').forEach(autoResizeTextarea);
       }
+
+      // scheduleEditTable에 이벤트 위임 (렌더링과 분리)
+      scheduleEditTable.addEventListener('change', (e) => {
+        const input = e.target.closest('.schedule-field');
+        if (!input) return;
+        updateScheduleField(parseInt(input.dataset.index), input.dataset.field, input.value);
+      });
+
+      // cast textarea 입력 시 실시간 높이 조절
+      scheduleEditTable.addEventListener('input', (e) => {
+        if (e.target.classList.contains('cast-textarea')) {
+          autoResizeTextarea(e.target);
+        }
+      });
+
+      scheduleEditTable.addEventListener('click', (e) => {
+        const btn = e.target.closest('.delete-schedule-btn');
+        if (!btn) return;
+        deleteScheduleRow(parseInt(btn.dataset.index));
+      });
 
       function updateScheduleField(index, field, value) {
         if (field === "cast") {
-          tempCastingData.schedule[index][field] = value
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean);
+          tempCastingData.schedule[index][field] = value.split(",").map(s => s.trim()).filter(Boolean);
         } else {
           tempCastingData.schedule[index][field] = value;
         }
       }
 
       function addScheduleRow() {
-        tempCastingData.schedule.push({
-          date: "",
-          day: "",
-          time: "",
-          cast: [],
-        });
+        tempCastingData.schedule.push({ date: "", day: "", time: "", cast: [] });
         renderScheduleEditTable();
       }
 
@@ -1899,28 +1868,19 @@
       }
 
       // ===== 저장 진행 =====
+      const EXCLUDED_ROLES = new Set(["날짜", "요일", "시간"]);
+
       function proceedToSave() {
         const showName = showNameEditInput.value.trim();
-        if (!showName) {
-          alert("공연명을 입력해주세요.");
-          return;
-        }
+        if (!showName) { alert("공연명을 입력해주세요."); return; }
 
         const rolesText = rolesInput.value.trim();
-        if (!rolesText) {
-          alert("역할을 입력해주세요.");
-          return;
-        }
-        // 자동 제외 목록 추가
-        const excludedRoles = ["날짜", "요일", "시간"];
+        if (!rolesText) { alert("역할을 입력해주세요."); return; }
 
         tempCastingData.roles = rolesText
           .split(",")
-          .map((s) => s.trim())
-          .filter(
-            (role) =>
-              role && !excludedRoles.some((excluded) => role === excluded),
-          );
+          .map(s => s.trim())
+          .filter(r => r && !EXCLUDED_ROLES.has(r));
 
         if (tempCastingData.schedule.length === 0) {
           alert("최소 1개 이상의 일정을 입력해주세요.");
@@ -1929,121 +1889,55 @@
 
         if (currentShowId) {
           // 수정 모드
-          shows[currentShowId] = {
-            name: showName,
-            data: tempCastingData,
-          };
-
+          shows[currentShowId] = { name: showName, data: tempCastingData };
           saveShows();
           tempCastingData = null;
-
           alert(`"${showName}" 공연이 수정되었습니다!`);
           viewShow(currentShowId);
         } else {
-          // 신규 모드 - 바로 저장
-          
+          // 신규 모드
           const showId = Date.now().toString();
-          shows[showId] = {
-            name: showName,
-            data: tempCastingData,
-          };
-
+          shows[showId] = { name: showName, data: tempCastingData };
           saveShows();
           tempCastingData = null;
-
+          currentUploadedImageData = null;
           alert(`"${showName}" 공연이 저장되었습니다!`);
-          showHomeSection();
+          goHome();
         }
       }
 
-      // processData - 동그라미와 첫공/막공 태그 제거 후 중복 제거
-      // 데이터 처리 및 배우 목록 생성
+      // ===== 데이터 처리 =====
       function processData() {
-        const actorsSet = new Set();
+        const actorsMap = {};
 
-        const excludeKeywords = [
-          "공연없음",
-          "공연 없음",
-          "없음",
-          "x",
-          "-",
-          "휴무",
-          "공연x",
-          "공연 x",
-        ];
+        castingData.schedule.forEach(show => {
+          show.cast.forEach(actor => {
+            const clean = cleanActorName(actor);
 
-        castingData.schedule.forEach((show) => {
-          show.cast.forEach((actor) => {
-            let cleanActor = actor.trim();
+            if (!isValidKoreanName(clean)) return;
+            if (EXCLUDE_KEYWORDS.has(clean)) return;
 
-            if (!cleanActor) return;
-
-            // 동그라미(●, ○, •) 제거
-            cleanActor = cleanActor.replace(/[●○•◉◎⑩]/g, "").trim();
-
-            if (cleanActor.length === 1) {
-              console.log(`한 글자 배우 이름 제외: "${cleanActor}"`);
-              return;
-            }
-
-            const normalizedActor = cleanActor
-              .toLowerCase()
-              .replace(/\s+/g, "");
-            const shouldExclude = excludeKeywords.some((keyword) => {
-              const normalizedKeyword = keyword
-                .toLowerCase()
-                .replace(/\s+/g, "");
-              return normalizedActor === normalizedKeyword;
-            });
-
-            if (!shouldExclude) {
-              actorsSet.add(cleanActor);
-            }
+            // 대소문자/공백 무시한 정규화 키로 중복 통합
+            const key = clean.toLowerCase().replace(/\s+/g, "");
+            if (!actorsMap[key]) actorsMap[key] = clean;
           });
         });
 
-        allActors = Array.from(actorsSet).sort();
-
-        // 자동 병합: 완전히 같은 이름끼리 통합
-        const actorMergeMap = {};
-        allActors.forEach(actor => {
-          // 정규화된 이름으로 비교 (공백, 대소문자 무시)
-          const normalizedKey = actor.toLowerCase().replace(/\s+/g, "");
-          if (!actorMergeMap[normalizedKey]) {
-            actorMergeMap[normalizedKey] = actor; // 첫 번째 나타난 이름 사용
-          }
-        });
-
-        // schedule 내의 모든 배우 이름을 병합된 이름으로 통일
-        castingData.schedule.forEach((show) => {
+        // schedule 내 배우 이름을 정규화된 이름으로 통일
+        castingData.schedule.forEach(show => {
           show.cast = show.cast.map(actor => {
-            let cleanActor = actor.trim()
-              .replace(/[●○•◉◎⑩]/g, "")
-              .trim();
-
-            const normalizedKey = cleanActor.toLowerCase().replace(/\s+/g, "");
-            const mergedName = actorMergeMap[normalizedKey];
-
-            if (mergedName && mergedName !== cleanActor) {
-              return mergedName;
-            }
-            return actor;
+            const clean = cleanActorName(actor);
+            const key = clean.toLowerCase().replace(/\s+/g, "");
+            return actorsMap[key] ?? actor;
           });
         });
 
-        // 병합된 배우 목록만 사용
-        allActors = Object.values(actorMergeMap).sort();
+        allActors = Object.values(actorsMap).sort();
 
         actorStats = {};
-        allActors.forEach((actor) => {
-          actorStats[actor] = castingData.schedule.filter((show) =>
-            show.cast.some((castActor) => {
-              // 동그라미 제거 후 비교
-              const cleanCastActor = castActor
-                .replace(/[●○•◉◎⑩]/g, "")
-                .trim();
-              return cleanCastActor === actor;
-            }),
+        allActors.forEach(actor => {
+          actorStats[actor] = castingData.schedule.filter(show =>
+            show.cast.some(castActor => cleanActorName(castActor) === actor)
           ).length;
         });
       }
@@ -2051,17 +1945,11 @@
       function showData() {
         renderActorButtons();
         renderTable();
-        updatePhaseButtons(); // 차수 버튼 상태 업데이트
+        updatePhaseButtons();
 
-        // 새 스케줄 추가 버튼 동적 생성
-        const dataSection = document.getElementById("dataSection");
-        let addMoreBtn = document.getElementById("addMoreScheduleBtn");
-        
-        if (addMoreBtn) {
-          addMoreBtn.remove();
-        }
+        // 기존 버튼 제거 후 재생성
+        document.getElementById("addMoreScheduleBtn")?.remove();
 
-        // 새 버튼 생성
         const newBtn = document.createElement("div");
         newBtn.id = "addMoreScheduleBtn";
         newBtn.className = "mt-16 mb-24 text-center";
@@ -2076,145 +1964,85 @@
             </div>
           </button>
         `;
-        
         dataSection.appendChild(newBtn);
       }
 
-      // 차수 버튼 활성화/비활성화 상태 업데이트
       function updatePhaseButtons() {
-        // 현재 공연에 존재하는 차수들 찾기
-        const availablePhases = new Set();
-        castingData.schedule.forEach(show => {
-          if (show.phase) {
-            availablePhases.add(show.phase);
-          }
-        });
+        const availablePhases = new Set(castingData.schedule.map(s => s.phase).filter(Boolean));
 
-        // 모든 차수 버튼 업데이트
         [1, 2, 3].forEach(phase => {
           const btn = document.getElementById(`filter${phase}Btn`);
-          if (availablePhases.has(phase)) {
-            // 차수가 존재 - 활성화
-            btn.disabled = false;
-            btn.classList.remove('opacity-50', 'cursor-not-allowed');
-            btn.classList.add('hover:border-teal-500', 'cursor-pointer');
-          } else {
-            // 차수가 없음 - 비활성화
-            btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-            btn.classList.remove('hover:border-teal-500', 'cursor-pointer');
-          }
+          const available = availablePhases.has(phase);
+          btn.disabled = !available;
+          btn.classList.toggle('opacity-50', !available);
+          btn.classList.toggle('cursor-not-allowed', !available);
+          btn.classList.toggle('hover:border-teal-500', available);
+          btn.classList.toggle('cursor-pointer', available);
         });
       }
 
       function renderActorButtons(searchQuery = "") {
-        // 현재 공연의 실제 배우 목록만 추출
         const currentShowActors = new Set();
-        castingData.schedule.forEach((show) => {
-          show.cast.forEach((actor) => {
-            let cleanActor = actor
-              .replace(/[●○•◉◎⑩]/g, "") // 동그라미 제거
-              .trim();
-
-            // 한글 이름 검증
-            const koreanRegex = /^[가-힣]+$/;
-
-            // 제외 키워드
-            const excludeKeywords = [
-              "공연없음",
-              "공연 없음",
-              "없음",
-              "x",
-              "-",
-              "휴무",
-              "공연x",
-              "공연 x",
-            ];
-
-            if (
-              cleanActor &&
-              cleanActor.length > 1 &&
-              koreanRegex.test(cleanActor) &&
-              !excludeKeywords.includes(cleanActor)
-            ) {
-              currentShowActors.add(cleanActor);
+        castingData.schedule.forEach(show => {
+          show.cast.forEach(actor => {
+            const clean = cleanActorName(actor);
+            if (isValidKoreanName(clean) && !EXCLUDE_KEYWORDS.has(clean)) {
+              currentShowActors.add(clean);
             }
           });
         });
 
-        const filteredActors = Array.from(currentShowActors)
-          .filter((actor) =>
-            actor.toLowerCase().includes(searchQuery.toLowerCase()),
-          )
+        const filtered = Array.from(currentShowActors)
+          .filter(actor => actor.toLowerCase().includes(searchQuery.toLowerCase()))
           .sort();
 
-        actorButtons.innerHTML = filteredActors
-          .map(
-            (actor) => `
-    <button
-      onclick="selectActor('${actor}')"
-      class="px-4 py-2 rounded-md font-bold transition-all ${
-        selectedActors.includes(actor)
-          ? "bg-teal-500 text-white shadow-lg shadow-teal-500/30"
-          : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700"
-      }"
-    >
-      ${actor}
-      <span class="ml-2 text-xs font-semibold opacity-70">(${actorStats[actor] || 0})</span>
-    </button>
-  `,
-          )
+        actorButtons.innerHTML = filtered
+          .map(actor => `
+            <button
+              onclick="selectActor('${actor}')"
+              class="px-4 py-2 rounded-md font-bold transition-all ${
+                selectedActors.includes(actor)
+                  ? "bg-teal-500 text-white shadow-lg shadow-teal-500/30"
+                  : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700"
+              }"
+            >
+              ${actor}
+              <span class="ml-2 text-xs font-semibold opacity-70">(${actorStats[actor] || 0})</span>
+            </button>
+          `)
           .join("");
       }
 
       function selectActor(actorName) {
         const index = selectedActors.indexOf(actorName);
-        if (index > -1) {
-          selectedActors.splice(index, 1);
-        } else {
-          selectedActors.push(actorName);
-        }
+        if (index > -1) selectedActors.splice(index, 1);
+        else selectedActors.push(actorName);
 
         renderActorButtons(searchInput.value);
         renderTable();
         updateFilterUI();
       }
 
-      // updateFilterUI - 동그라미와 태그 제거 후 비교
       function updateFilterUI() {
         if (selectedActors.length > 0) {
           selectedActorBadge.classList.remove("hidden");
           filterHint.classList.add("hidden");
-
           selectedActorsText.textContent = selectedActors.join(", ");
 
-          // 차수 필터를 적용한 후 횟수 계산
-          let filteredSchedule = castingData.schedule;
-          
-          // 현재 차수 필터 적용
+          let filtered = castingData.schedule;
           if (currentPhaseFilter !== 'all') {
-            filteredSchedule = filteredSchedule.filter(show => show.phase === currentPhaseFilter);
+            filtered = filtered.filter(s => s.phase === currentPhaseFilter);
           }
 
-          // 선택한 배우가 모두 출연한 일정 카운트
-          const totalCount = filteredSchedule.filter((show) => {
-            return selectedActors.every((actor) => {
-              return show.cast.some((castActor) => {
-                // 동그라미와 태그 제거 후 비교
-                const cleanCastActor = castActor
-                  .replace(/[●○•◉◎⑩]/g, "")
-                  .replace(/\s*\(첫공\)/g, "")
-                  .replace(/\s*\(막공\)/g, "")
-                  .trim();
-                return cleanCastActor === actor;
-              });
-            });
-          }).length;
+          const count = filtered.filter(show =>
+            selectedActors.every(actor =>
+              show.cast.some(castActor => cleanActorName(castActor) === actor)
+            )
+          ).length;
 
           showInfo.classList.remove("hidden");
-          // 차수 필터 상태에 따라 표시
           const phaseText = currentPhaseFilter === 'all' ? '' : ` (${currentPhaseFilter}차)`;
-          showInfoText.textContent = `선택한 배우 출연 일정: 총 ${totalCount}회${phaseText}`;
+          showInfoText.textContent = `선택한 배우 출연 일정: 총 ${count}회${phaseText}`;
 
           renderStats();
         } else {
@@ -2225,103 +2053,75 @@
         }
       }
 
-      // renderTable - 차수 필터 + 배우 필터 + 시간순 정렬
       function renderTable() {
-        let filteredSchedule = castingData.schedule;
-        
-        // 차수 필터 적용
+        let filtered = castingData.schedule;
+
         if (currentPhaseFilter !== 'all') {
-          filteredSchedule = filteredSchedule.filter(show => show.phase === currentPhaseFilter);
+          filtered = filtered.filter(s => s.phase === currentPhaseFilter);
         }
-        
-        // 배우 필터 적용
+
         if (selectedActors.length > 0) {
-          filteredSchedule = filteredSchedule.filter((show) =>
-            selectedActors.every((actor) => {
-              return show.cast.some((castActor) => {
-                const cleanCastActor = castActor
-                  .replace(/[●○•◉◎⑩]/g, "")
-                  .replace(/\s*\(첫공\)/g, "")
-                  .replace(/\s*\(막공\)/g, "")
-                  .trim();
-                return cleanCastActor === actor;
-              });
-            }),
+          filtered = filtered.filter(show =>
+            selectedActors.every(actor =>
+              show.cast.some(castActor => cleanActorName(castActor) === actor)
+            )
           );
         }
 
-        // 시간순 정렬
-        const sortedSchedule = [...filteredSchedule].sort((a, b) => {
-          const dateA = parseDateString(a.date);
-          const dateB = parseDateString(b.date);
-          
-          return dateA - dateB;
-        });
+        const sorted = [...filtered].sort(
+          (a, b) => parseDateString(a.date) - parseDateString(b.date)
+        );
+
+        const roleCount = castingData.roles.length;
 
         tableHead.innerHTML = `
-    <tr class="bg-teal-800/80 backdrop-blur">
-      <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">날짜</th>
-      <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">요일</th>
-      <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">시간</th>
-      ${castingData.roles
-        .map(
-          (role) => `
-        <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 last:border-r-0 whitespace-nowrap">${role}</th>
-      `,
-        )
-        .join("")}
-    </tr>
-  `;
+          <tr class="bg-teal-800/80 backdrop-blur">
+            <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">날짜</th>
+            <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">요일</th>
+            <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">시간</th>
+            ${castingData.roles.map(role => `
+              <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 last:border-r-0 whitespace-nowrap">${role}</th>
+            `).join("")}
+          </tr>
+        `;
 
-        tableBody.innerHTML = sortedSchedule
-          .map(
-            (show) => `
-    <tr class="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors">
-      <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
-        <div class="text-base font-black">${show.date}</div>
-      </td>
-      <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
-        <div class="text-base font-semibold text-zinc-300">${show.day}</div>
-      </td>
-      <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
-        <div class="text-base font-semibold text-zinc-300">${show.time}</div>
-      </td>
-      ${show.cast
-        .map(
-          (actor, castIdx) => `
-        <td class="px-4 py-4 text-center border-r border-zinc-800 last:border-r-0 transition-all table-cell-highlight whitespace-nowrap ${
-          isActorInShow(show, castIdx)
-            ? "active bg-teal-500/30 font-black text-teal-300 ring-2 ring-inset ring-teal-500/50"
-            : "text-zinc-300 font-semibold"
-        }">
-          <button onclick="selectActor('${actor
-            .replace(/[●○•◉◎⑩]/g, "")
-            .replace(/\s*\(첫공\)/g, "")
-            .replace(/\s*\(막공\)/g, "")
-            .trim()}')" class="hover:text-teal-400 transition-colors w-full">
-            ${actor}
-          </button>
-        </td>
-      `,
-        )
-        .join("")}
-    </tr>
-  `,
-          )
-          .join("");
-      }
+        tableBody.innerHTML = sorted.map(show => {
+          // cast 길이가 roles와 다를 경우 빈 셀로 패딩하여 테이블 깨짐 방지
+          const paddedCast = Array.from({ length: roleCount }, (_, i) => show.cast[i] ?? "");
 
-      // 선택된 배우가 현재 역할에 있는지 확인
-      function isActorInShow(show, roleIndex) {
-        const actorAtRole = show.cast[roleIndex];
-        const cleanActorAtRole = actorAtRole
-          .replace(/[●○•◉◎⑩]/g, "")
-          .trim();
-        return selectedActors.includes(cleanActorAtRole);
+          return `
+            <tr class="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors">
+              <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
+                <div class="text-base font-black">${show.date}</div>
+              </td>
+              <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
+                <div class="text-base font-semibold text-zinc-300">${show.day}</div>
+              </td>
+              <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
+                <div class="text-base font-semibold text-zinc-300">${show.time}</div>
+              </td>
+              ${paddedCast.map((actor, castIdx) => {
+                const cleanActor = cleanActorName(actor);
+                const isHighlighted = cleanActor && selectedActors.includes(cleanActor);
+                return `
+                  <td class="px-4 py-4 text-center border-r border-zinc-800 last:border-r-0 transition-all table-cell-highlight whitespace-nowrap ${
+                    isHighlighted
+                      ? "active bg-teal-500/30 font-black text-teal-300 ring-2 ring-inset ring-teal-500/50"
+                      : "text-zinc-300 font-semibold"
+                  }">
+                    ${cleanActor
+                      ? `<button onclick="selectActor('${cleanActor}')" class="hover:text-teal-400 transition-colors w-full">${actor}</button>`
+                      : `<span class="text-zinc-600">—</span>`
+                    }
+                  </td>
+                `;
+              }).join("")}
+            </tr>
+          `;
+        }).join("");
       }
 
       function renderStats() {
-        // 통계 섹션 사용 안 함
         statsSection.classList.add("hidden");
       }
 
@@ -2336,89 +2136,45 @@
         updateFilterUI();
       });
 
-      // 차수 필터 함수
       function filterByPhase(phase) {
-        // 비활성화된 버튼 클릭 방지
         const btnId = phase === 'all' ? 'filterAllBtn' : `filter${phase}Btn`;
-        const btn = document.getElementById(btnId);
-        if (btn.disabled) {
-          return;
-        }
+        if (document.getElementById(btnId)?.disabled) return;
 
         currentPhaseFilter = phase;
-        
-        // 버튼 UI 업데이트
+
         document.querySelectorAll('.phase-filter-btn').forEach(btn => {
           btn.classList.remove('bg-teal-500', 'text-white');
           btn.classList.add('bg-zinc-800', 'border', 'border-zinc-700', 'text-zinc-300');
         });
-        
-        if (phase === 'all') {
-          document.getElementById('filterAllBtn').classList.remove('bg-zinc-800', 'border', 'border-zinc-700', 'text-zinc-300');
-          document.getElementById('filterAllBtn').classList.add('bg-teal-500', 'text-white');
-        } else {
-          document.getElementById(`filter${phase}Btn`).classList.remove('bg-zinc-800', 'border', 'border-zinc-700', 'text-zinc-300');
-          document.getElementById(`filter${phase}Btn`).classList.add('bg-teal-500', 'text-white');
-        }
-        
+
+        const activeBtn = document.getElementById(btnId);
+        activeBtn.classList.remove('bg-zinc-800', 'border', 'border-zinc-700', 'text-zinc-300');
+        activeBtn.classList.add('bg-teal-500', 'text-white');
+
         renderTable();
-        // 배우 필터 선택 시 차수 필터에 맞춰 횟수 업데이트
-        if (selectedActors.length > 0) {
-          updateFilterUI();
-        }
+        if (selectedActors.length > 0) updateFilterUI();
       }
 
       // ===== 예시 데이터 로드 =====
       function loadSampleData(event) {
-        if (event) {
-          event.stopPropagation();
-        }
+        event?.stopPropagation();
 
         tempCastingData = {
           roles: ["엘사", "안나", "크리스토프"],
           schedule: [
-            {
-              date: "03.15 (금)",
-              day: "금",
-              time: "14:00",
-              cast: ["김민수", "이지은", "박서준"],
-              phase: 1,
-            },
-            {
-              date: "03.15 (금)",
-              day: "금",
-              time: "19:00",
-              cast: ["최수진", "이지은", "공연없음"],
-              phase: 1,
-            },
-            {
-              date: "03.16 (토)",
-              day: "토",
-              time: "14:00",
-              cast: ["김민수", "정하은", "박서준"],
-              phase: 1,
-            },
-            {
-              date: "03.16 (토)",
-              day: "토",
-              time: "19:00",
-              cast: ["최수진", "정하은", "강민호"],
-              phase: 1,
-            },
+            { date: "03.15 (금)", day: "금", time: "14:00", cast: ["김민수", "이지은", "박서준"], phase: 1 },
+            { date: "03.15 (금)", day: "금", time: "19:00", cast: ["최수진", "이지은", "공연없음"], phase: 1 },
+            { date: "03.16 (토)", day: "토", time: "14:00", cast: ["김민수", "정하은", "박서준"], phase: 1 },
+            { date: "03.16 (토)", day: "토", time: "19:00", cast: ["최수진", "정하은", "강민호"], phase: 1 },
           ],
         };
 
-        uploadSection.classList.add("hidden");
-        showConfirmSection();
+        showSection('home');
+        openConfirmSection();
       }
 
-      function cancelSave() {
-        saveModal.classList.add("hidden");
-      }
-
-      function confirmSave() {
-        saveModal.classList.add("hidden");
-      }
+      function cancelSave() { saveModal.classList.add("hidden"); }
+      function confirmSave() { saveModal.classList.add("hidden"); }
     </script>
   </body>
 </html>
