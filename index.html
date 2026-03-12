@@ -20,6 +20,15 @@
           sans-serif;
       }
 
+      /* iOS Safari 자동 줌 방지: input/textarea 16px 이상 */
+      @media (max-width: 640px) {
+        input[type="text"],
+        textarea,
+        select {
+          font-size: 16px !important;
+        }
+      }
+
       .custom-scrollbar::-webkit-scrollbar {
         width: 8px;
       }
@@ -87,26 +96,37 @@
       <header
         class="border-b border-teal-700/30 bg-zinc-950/50 backdrop-blur-sm"
       >
-        <div class="max-w-7xl mx-auto px-6 py-8">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 sm:py-8">
           <div class="text-center">
             <h1
-              class="text-4xl md:text-5xl font-black mb-4 tracking-tight cursor-pointer transition-colors"
+              class="text-2xl sm:text-4xl md:text-5xl font-black mb-1 sm:mb-4 tracking-tight cursor-pointer transition-colors"
               onclick="showSection('home')"
             >
               캐스팅 스케줄 자동 관리
             </h1>
-            <p class="text-zinc-400 text-lg font-medium">
+            <p class="text-zinc-400 text-sm sm:text-lg font-medium">
               Casting Schedule Manager
             </p>
           </div>
         </div>
       </header>
 
-      <main class="max-w-7xl mx-auto px-6 py-12">
+      <main class="max-w-7xl mx-auto px-4 py-6 sm:px-6 sm:py-12">
         <!-- 홈 화면 -->
         <div id="homeSection">
-          <div class="mb-8 flex items-center justify-between">
-            <h2 class="text-3xl font-bold text-white">📋 내 공연 리스트</h2>
+          <!-- 타이틀 + 추가 버튼 항상 같은 줄에 -->
+          <div class="mb-8 flex items-center justify-between gap-4">
+            <h2 class="text-xl sm:text-3xl font-bold text-white">📋 내 공연 리스트</h2>
+            <button
+              onclick="showSection('upload')"
+              class="flex-shrink-0 inline-flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 text-sm sm:text-base"
+            >
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              <span class="hidden sm:inline">공연 추가하기</span>
+              <span class="sm:hidden">추가</span>
+            </button>
           </div>
 
           <!-- 공연 리스트 -->
@@ -117,76 +137,16 @@
 
           <!-- 빈 상태 -->
           <div id="emptyState" class="text-center py-20">
-            <div class="mb-12">
-              <div
-                class="w-32 h-32 mx-auto mb-8 bg-zinc-800/50 rounded-3xl flex items-center justify-center border border-zinc-700/50"
-              >
-                <svg
-                  class="w-16 h-16 text-zinc-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
+            <div class="mb-8">
+              <div class="w-20 h-20 sm:w-32 sm:h-32 mx-auto mb-6 sm:mb-8 bg-zinc-800/50 rounded-3xl flex items-center justify-center border border-zinc-700/50">
+                <svg class="w-10 h-10 sm:w-16 sm:h-16 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h3 class="text-2xl font-bold text-white mb-3">
-                등록된 공연이 없습니다
-              </h3>
-              <p class="text-zinc-500 text-base">
-                첫 번째 캐스팅 스케줄을 추가해보세요!
-              </p>
+              <h3 class="text-xl sm:text-2xl font-bold text-white mb-3">등록된 공연이 없습니다</h3>
+              <p class="text-zinc-500 text-base">위 버튼으로 첫 번째 캐스팅 스케줄을 추가해보세요!</p>
             </div>
-            <button
-              onclick="showSection('upload')"
-              class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-105"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                ></path>
-              </svg>
-              원하는 공연이 없나요? 직접 추가하기
-            </button>
-          </div>
-
-          <!-- 하단 버튼 (공연이 있을 때만 표시) -->
-          <div
-            id="addShowButton"
-            class="hidden justify-center mt-16 mb-24"
-          >
-            <button
-              onclick="showSection('upload')"
-              class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-105"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4v16m8-8H4"
-                ></path>
-              </svg>
-              원하는 공연이 없나요? 직접 추가하기
-            </button>
           </div>
         </div>
 
@@ -216,7 +176,7 @@
 
             <div
               id="dropZone"
-              class="relative border-2 border-dashed border-teal-500 bg-teal-500/10 rounded-2xl p-16 text-center hover:border-teal-400 hover:bg-teal-500/20 transition-all"
+              class="relative border-2 border-dashed border-teal-500 bg-teal-500/10 rounded-2xl p-6 sm:p-16 text-center hover:border-teal-400 hover:bg-teal-500/20 transition-all"
             >
               <input
                 type="file"
@@ -228,7 +188,7 @@
               <div class="space-y-4">
                 <div class="flex justify-center">
                   <svg
-                    class="w-20 h-20 text-teal-500"
+                    class="w-12 h-12 sm:w-20 sm:h-20 text-teal-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -242,17 +202,17 @@
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-2xl font-semibold text-teal-400 mb-2">
+                  <h3 class="text-lg sm:text-2xl font-semibold text-teal-400 mb-2">
                     캐스팅 스케줄 이미지 업로드
                   </h3>
                   <p class="text-zinc-400">
                     클릭하거나 드래그하여 이미지를 선택하세요
                   </p>
                 </div>
-                <div class="flex justify-center gap-4">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-3">
                   <label
                     for="fileInput"
-                    class="px-8 py-4 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded-xl cursor-pointer transition-all shadow-lg shadow-teal-600/30 hover:shadow-teal-500/50 hover:scale-105 inline-flex items-center gap-3"
+                    class="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded-xl cursor-pointer transition-all shadow-lg shadow-teal-600/30 hover:shadow-teal-500/50 hover:scale-105 inline-flex items-center justify-center gap-3"
                   >
                     <span class="inline-flex items-center gap-2">
                       <svg
@@ -273,7 +233,7 @@
                   </label>
                   <button
                     onclick="loadSampleData(event)"
-                    class="px-8 py-4 bg-zinc-700 hover:bg-zinc-600 text-white font-semibold rounded-xl cursor-pointer transition-all shadow-lg shadow-zinc-700/20 hover:shadow-zinc-600/40 hover:scale-105 inline-flex items-center gap-3"
+                    class="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-4 bg-zinc-700 hover:bg-zinc-600 text-white font-semibold rounded-xl cursor-pointer transition-all shadow-lg shadow-zinc-700/20 hover:shadow-zinc-600/40 hover:scale-105 inline-flex items-center justify-center gap-3"
                   >
                     <svg
                       class="w-5 h-5"
@@ -302,12 +262,12 @@
         <!-- 로딩 화면 -->
         <div id="loadingSection" class="hidden">
           <div class="max-w-3xl mx-auto">
-            <div class="relative border-2 border-dashed border-teal-500 bg-teal-500/10 rounded-2xl p-16 text-center">
+            <div class="relative border-2 border-dashed border-teal-500 bg-teal-500/10 rounded-2xl p-6 sm:p-16 text-center">
               <div class="space-y-8">
 
                 <!-- 아이콘 -->
                 <div class="flex justify-center">
-                  <svg class="w-20 h-20 text-teal-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-12 h-12 sm:w-20 sm:h-20 text-teal-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                   </svg>
@@ -315,7 +275,7 @@
 
                 <!-- 텍스트 -->
                 <div>
-                  <h3 class="text-2xl font-semibold text-teal-400 mb-2">AI가 캐스팅 스케줄 분석 중...</h3>
+                  <h3 class="text-lg sm:text-2xl font-semibold text-teal-400 mb-2">AI가 캐스팅 스케줄 분석 중...</h3>
                   <p class="text-zinc-400">배우와 출연 일정을 불러오는 중이에요.</p>
                 </div>
 
@@ -340,8 +300,8 @@
 
         <!-- 확인 및 수정 화면 -->
         <div id="confirmSection" class="hidden">
-          <div class="mb-8 flex items-center justify-between">
-            <div class="flex items-center gap-4">
+          <div class="mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 sm:gap-4">
               <button
                 id="confirmBackBtn"
                 onclick="showDataSectionFromConfirm()"
@@ -369,7 +329,7 @@
             <div class="flex gap-3">
               <button
                 id="deleteFromConfirmBtn"
-                class="flex items-center gap-2 px-4 py-2 bg-red-900/50 hover:bg-red-900/70 border border-red-700 rounded-md text-red-300 font-medium transition-all"
+                class="flex items-center gap-1.5 px-3 py-2 bg-red-900/50 hover:bg-red-900/70 border border-red-700 rounded-md text-red-300 font-medium transition-all text-sm sm:text-base"
               >
                 <svg
                   class="w-5 h-5"
@@ -389,7 +349,7 @@
 
               <button
                 onclick="proceedToSave()"
-                class="flex items-center gap-2 px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-teal-500/20"
+                class="flex items-center gap-1.5 px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-lg transition-all shadow-lg shadow-teal-500/20 text-sm sm:text-base"
               >
                 <svg
                   class="w-5 h-5"
@@ -420,18 +380,18 @@
             </p>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start">
 
-            <!-- 왼쪽: 원본 이미지 -->
-            <div id="uploadedImageContainer" class="hidden">
+            <!-- 왼쪽(데스크탑)/하단(모바일): 원본 이미지 -->
+            <div id="uploadedImageContainer" class="hidden order-2 lg:order-1">
               <label class="block text-sm font-bold text-teal-400 mb-3">원본 이미지</label>
               <div class="rounded-lg border border-zinc-700 overflow-hidden sticky top-6">
                 <img id="uploadedImage" src="" alt="업로드된 이미지" class="w-full" />
               </div>
             </div>
 
-            <!-- 오른쪽: 수정 폼 -->
-            <div class="space-y-6">
+            <!-- 오른쪽(데스크탑)/상단(모바일): 수정 폼 -->
+            <div class="space-y-6 order-1 lg:order-2">
               <!-- 공연명 입력 -->
               <div>
                 <label class="block text-sm font-bold text-teal-400 mb-3"
@@ -468,14 +428,14 @@
                   <p class="text-xs text-zinc-500 mb-3">
                     공연 일정 시트에 잘못 인식되어있는 배우 이름을 한번에 수정합니다.
                   </p>
-                  <div class="flex gap-3">
+                  <div class="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       id="findActorInput"
                       placeholder="잘못 인식된 배우명 (예: 김민슈)"
                       class="flex-1 px-3 py-2 bg-zinc-900 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-teal-500 transition-colors"
                     />
-                    <span class="flex items-center text-zinc-500">→</span>
+                    <span class="hidden sm:flex items-center text-zinc-500">→</span>
                     <input
                       type="text"
                       id="replaceActorInput"
@@ -518,40 +478,16 @@
                     행 추가
                   </button>
                 </div>
-                <div class="overflow-x-auto rounded-lg border border-zinc-700">
-                  <table class="w-full">
-                    <thead class="bg-zinc-800/80">
-                      <tr>
-                        <th
-                          class="px-3 py-2 text-left text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                        >
-                          날짜
-                        </th>
-                        <th
-                          class="px-3 py-2 text-center text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                        >
-                          요일
-                        </th>
-                        <th
-                          class="px-3 py-2 text-center text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                        >
-                          시간
-                        </th>
-                        <th
-                          class="px-3 py-2 text-left text-xs font-bold text-zinc-400 border-r border-zinc-700"
-                        >
-                          배우 (쉼표 구분)
-                        </th>
-                        <th
-                          class="px-3 py-2 text-center text-xs font-bold text-zinc-400"
-                        >
-                          삭제
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody id="scheduleEditTable"></tbody>
-                  </table>
+                <!-- 데스크탑 헤더 -->
+                <div class="hidden sm:grid sm:grid-cols-[5.5rem_3rem_4.5rem_1fr_2.5rem] bg-zinc-800/80 rounded-t-lg border border-zinc-700 text-xs font-bold text-zinc-400">
+                  <div class="px-2 py-2 border-r border-zinc-700 whitespace-nowrap">날짜</div>
+                  <div class="px-1 py-2 border-r border-zinc-700 text-center whitespace-nowrap">요일</div>
+                  <div class="px-1 py-2 border-r border-zinc-700 text-center whitespace-nowrap">시간</div>
+                  <div class="px-2 py-2 border-r border-zinc-700 whitespace-nowrap">배우 (쉼표 구분)</div>
+                  <div class="px-1 py-2 text-center whitespace-nowrap">삭제</div>
                 </div>
+                <!-- 수정 행 목록 -->
+                <div id="scheduleEditTable" class="space-y-2 sm:space-y-0 sm:border sm:border-t-0 sm:border-zinc-700 sm:rounded-b-lg overflow-hidden"></div>
               </div>
             </div>
 
@@ -562,8 +498,8 @@
 
         <!-- 데이터 표시 화면 -->
         <div id="dataSection" class="hidden">
-          <div class="mb-8 flex items-center justify-between">
-            <div class="flex items-center gap-4">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2 sm:gap-4">
               <button
                 onclick="showSection('home')"
                 class="flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-md text-zinc-300 font-medium transition-all"
@@ -584,13 +520,13 @@
               </button>
               <h2
                 id="currentShowTitle"
-                class="text-3xl font-black text-white"
+                class="text-xl sm:text-3xl font-black text-white"
               ></h2>
             </div>
             <div class="flex gap-2">
               <button
                 id="editShowBtn"
-                class="px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-all inline-flex items-center gap-2"
+                class="px-3 py-2 sm:px-4 bg-teal-600 hover:bg-teal-500 text-white rounded-lg transition-all inline-flex items-center gap-2 text-sm sm:text-base"
               >
                 <svg
                   class="w-5 h-5"
@@ -609,7 +545,7 @@
               </button>
               <button
                 id="deleteShowBtn"
-                class="px-4 py-2 bg-red-900/50 hover:bg-red-900/70 border border-red-700 rounded-lg text-red-300 font-medium transition-all inline-flex items-center gap-2"
+                class="px-3 py-2 sm:px-4 bg-red-900/50 hover:bg-red-900/70 border border-red-700 rounded-lg text-red-300 font-medium transition-all inline-flex items-center gap-2 text-sm sm:text-base"
               >
                 <svg
                   class="w-5 h-5"
@@ -630,7 +566,7 @@
           </div>
 
           <div
-            class="mb-6 space-y-4 bg-zinc-900/50 border border-zinc-800 rounded-lg p-6"
+            class="mb-6 space-y-3 bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 sm:p-6"
           >
             <div class="flex items-center gap-4 flex-wrap">
               <div class="flex items-center gap-2 text-teal-400">
@@ -651,16 +587,16 @@
               </div>
 
               <div class="flex gap-2">
-                <button onclick="filterByPhase('all')" id="filterAllBtn" class="phase-filter-btn px-4 py-2 bg-teal-500 text-white rounded-md font-bold transition-all">
+                <button onclick="filterByPhase('all')" id="filterAllBtn" class="phase-filter-btn px-3 py-1.5 sm:px-4 sm:py-2 bg-teal-500 text-white rounded-md font-bold transition-all text-sm sm:text-base">
                   전체
                 </button>
-                <button onclick="filterByPhase(1)" id="filter1Btn" class="phase-filter-btn px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md font-bold transition-all hover:border-teal-500">
+                <button onclick="filterByPhase(1)" id="filter1Btn" class="phase-filter-btn px-3 py-1.5 sm:px-4 sm:py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md font-bold transition-all hover:border-teal-500 text-sm sm:text-base">
                   1차
                 </button>
-                <button onclick="filterByPhase(2)" id="filter2Btn" class="phase-filter-btn px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md font-bold transition-all hover:border-teal-500">
+                <button onclick="filterByPhase(2)" id="filter2Btn" class="phase-filter-btn px-3 py-1.5 sm:px-4 sm:py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md font-bold transition-all hover:border-teal-500 text-sm sm:text-base">
                   2차
                 </button>
-                <button onclick="filterByPhase(3)" id="filter3Btn" class="phase-filter-btn px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md font-bold transition-all hover:border-teal-500">
+                <button onclick="filterByPhase(3)" id="filter3Btn" class="phase-filter-btn px-3 py-1.5 sm:px-4 sm:py-2 bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-md font-bold transition-all hover:border-teal-500 text-sm sm:text-base">
                   3차
                 </button>
               </div>
@@ -684,7 +620,7 @@
                 <span class="font-bold">배우 필터:</span>
               </div>
 
-              <div class="relative flex-1 min-w-[200px] max-w-xs">
+              <div class="relative flex-1 min-w-[120px] sm:min-w-[200px] max-w-xs">
                 <svg
                   class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"
                   fill="none"
@@ -747,7 +683,7 @@
                 </button>
               </div>
 
-              <span id="filterHint" class="text-zinc-500 text-sm"
+              <span id="filterHint" class="text-zinc-500 text-xs sm:text-sm hidden sm:block"
                 >배우를 선택하면 해당 출연 회차만 표시됩니다 (여러 명 선택 시
                 모두 출연한 회차만 표시)</span
               >
@@ -801,9 +737,9 @@
       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div
-        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-5 sm:p-8 max-w-md w-full mx-4 shadow-2xl"
       >
-        <h3 class="text-2xl font-black text-white mb-4">공연명 입력</h3>
+        <h3 class="text-xl sm:text-2xl font-black text-white mb-4">공연명 입력</h3>
         <input
           type="text"
           id="showNameInput"
@@ -833,7 +769,7 @@
       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div
-        class="bg-zinc-900 border-2 border-red-700/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+        class="bg-zinc-900 border-2 border-red-700/50 rounded-2xl p-5 sm:p-8 max-w-md w-full mx-4 shadow-2xl"
       >
         <div class="flex items-center gap-3 mb-4">
           <svg
@@ -849,7 +785,7 @@
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
             />
           </svg>
-          <h3 class="text-2xl font-black text-white">공연 삭제</h3>
+          <h3 class="text-xl sm:text-2xl font-black text-white">공연 삭제</h3>
         </div>
         <p class="text-zinc-300 mb-6">
           <span id="deleteShowName" class="font-bold text-white"></span> 공연을
@@ -881,9 +817,9 @@
       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div
-        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-5 sm:p-8 max-w-md w-full mx-4 shadow-2xl"
       >
-        <h3 class="text-2xl font-black text-white mb-6">스케줄 차수 선택</h3>
+        <h3 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">스케줄 차수 선택</h3>
         <p class="text-zinc-400 mb-6">몇 차 스케줄인가요?</p>
         <div class="flex gap-3">
           <button
@@ -920,10 +856,10 @@
       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div
-        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-8 max-w-2xl w-full mx-4 shadow-2xl max-h-[80vh] overflow-y-auto"
+        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-5 sm:p-8 max-w-2xl w-full mx-4 shadow-2xl max-h-[85vh] overflow-y-auto"
       >
-        <h3 class="text-2xl font-black text-white mb-2">배우 이름 수정</h3>
-        <p class="text-zinc-400 mb-6">유사한 배우 이름을 발견했습니다. 수정할 이름을 선택하세요.</p>
+        <h3 class="text-xl sm:text-2xl font-black text-white mb-2">배우 이름 수정</h3>
+        <p class="text-zinc-400 mb-6">새롭게 인식된 배우 이름을 기존 배우 이름에 합쳐주세요.</p>
         
         <div id="mergeActorList" class="space-y-3 mb-6"></div>
         
@@ -950,9 +886,9 @@
       class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div
-        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+        class="bg-zinc-900 border-2 border-teal-700/50 rounded-2xl p-5 sm:p-8 max-w-md w-full mx-4 shadow-2xl"
       >
-        <h3 class="text-2xl font-black text-white mb-6">스케줄 차수 선택</h3>
+        <h3 class="text-xl sm:text-2xl font-black text-white mb-4 sm:mb-6">스케줄 차수 선택</h3>
         <p class="text-zinc-400 mb-6">몇 차 스케줄인가요?</p>
         <div class="flex gap-3">
           <button
@@ -1224,28 +1160,22 @@
       // ===== 홈 화면 렌더링 =====
       function renderHome() {
         const showsArray = Object.entries(shows);
-        const addShowButton = document.getElementById("addShowButton");
 
         if (showsArray.length === 0) {
           emptyState.classList.remove("hidden");
           showsList.classList.add("hidden");
-          addShowButton.classList.add("hidden");
-          addShowButton.style.display = '';
         } else {
           emptyState.classList.add("hidden");
           showsList.classList.remove("hidden");
-          // hidden 제거 + flex 명시적으로 설정 (hidden/flex 동시 선언 문제 해결)
-          addShowButton.classList.remove("hidden");
-          addShowButton.style.display = 'flex';
 
           showsList.innerHTML = showsArray
             .map(
               ([showId, show]) => `
-              <div class="bg-zinc-900/50 border-2 border-zinc-800 hover:border-teal-700/50 rounded-xl p-6 cursor-pointer transition-all hover:shadow-lg hover:shadow-teal-700/20"
+              <div class="bg-zinc-900/50 border-2 border-zinc-800 hover:border-teal-700/50 rounded-xl p-4 sm:p-6 cursor-pointer transition-all hover:shadow-lg hover:shadow-teal-700/20"
                 data-show-id="${showId}"
                 data-action="view">
                 <div class="flex justify-between items-start mb-4">
-                  <h3 class="text-xl font-black text-white">${show.name}</h3>
+                  <h3 class="text-base sm:text-xl font-black text-white">${show.name}</h3>
                   <button 
                     class="p-2 hover:bg-red-900/30 rounded-lg transition-colors"
                     data-show-id="${showId}"
@@ -1556,12 +1486,12 @@
             <div class="bg-zinc-800 border border-zinc-700 rounded-lg p-4">
               <div class="flex items-center gap-4">
                 <div class="flex-1">
-                  <div class="text-sm text-zinc-500 mb-1">신규 배우명</div>
+                  <div class="text-sm text-zinc-500 mb-1">new</div>
                   <div class="text-white font-bold">${newActor}</div>
                 </div>
                 <div class="text-zinc-400">→</div>
                 <div class="flex-1">
-                  <div class="text-sm text-zinc-500 mb-1">기존 배우명</div>
+                  <div class="text-sm text-zinc-500 mb-1">합칠 배우명</div>
                   <select id="select_${newActor}" class="w-full px-3 py-2 bg-zinc-700 border border-zinc-600 rounded text-white focus:outline-none focus:border-teal-500">
                     <option value="${existingActor}">${existingActor}</option>
                     <option value="keep">${newActor} (수정 안함)</option>
@@ -1747,6 +1677,7 @@
           let bestSimilarity = threshold;
 
           existingActors.forEach(existingActor => {
+            if (newActor === existingActor) return; // 완전 일치는 팝업 불필요
             const similarity = calculateSimilarity(newActor, existingActor);
             if (similarity > bestSimilarity) {
               bestSimilarity = similarity;
@@ -1791,41 +1722,63 @@
         }
       }
 
-      // ===== 일정 수정 테이블 =====
+      // ===== 일정 수정 목록 =====
+      // 모바일: 카드형 레이아웃, 데스크탑(sm+): 그리드 행
       function renderScheduleEditTable() {
         scheduleEditTable.innerHTML = tempCastingData.schedule
           .map((show, index) => `
-            <tr class="bg-zinc-900/30">
-              <td class="px-3 py-2 border-r border-zinc-700 w-28">
+            <div class="
+              schedule-edit-row
+              bg-zinc-900/50 border border-zinc-700 rounded-lg p-3 sm:p-0
+              sm:grid sm:grid-cols-[5.5rem_3rem_4.5rem_1fr_2.5rem]
+              sm:rounded-none sm:border-0 sm:border-b sm:border-zinc-700
+              sm:last:border-b-0 sm:bg-transparent
+            " data-row-index="${index}">
+
+              <!-- 날짜 -->
+              <div class="flex items-center gap-2 mb-2 sm:mb-0 sm:px-1 sm:py-1 sm:border-r sm:border-zinc-700">
+                <span class="text-xs text-zinc-500 w-8 flex-shrink-0 sm:hidden">날짜</span>
                 <input type="text" value="${show.date}" data-index="${index}" data-field="date"
-                  class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500" />
-              </td>
-              <td class="px-3 py-2 border-r border-zinc-700 w-16">
+                  class="schedule-field flex-1 min-w-0 w-full px-1 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500 whitespace-nowrap" />
+              </div>
+
+              <!-- 요일 -->
+              <div class="flex items-center gap-2 mb-2 sm:mb-0 sm:px-1 sm:py-1 sm:border-r sm:border-zinc-700">
+                <span class="text-xs text-zinc-500 w-8 flex-shrink-0 sm:hidden">요일</span>
                 <input type="text" value="${show.day}" data-index="${index}" data-field="day"
-                  class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500" />
-              </td>
-              <td class="px-3 py-2 border-r border-zinc-700 w-20">
+                  class="schedule-field flex-1 min-w-0 w-full px-1 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500 whitespace-nowrap" />
+              </div>
+
+              <!-- 시간 -->
+              <div class="flex items-center gap-2 mb-2 sm:mb-0 sm:px-1 sm:py-1 sm:border-r sm:border-zinc-700">
+                <span class="text-xs text-zinc-500 w-8 flex-shrink-0 sm:hidden">시간</span>
                 <input type="text" value="${show.time}" data-index="${index}" data-field="time"
-                  class="schedule-field w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500" />
-              </td>
-              <td class="px-3 py-2 border-r border-zinc-700">
+                  class="schedule-field flex-1 min-w-0 w-full px-1 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm text-center focus:outline-none focus:border-teal-500 whitespace-nowrap" />
+              </div>
+
+              <!-- 배우 -->
+              <div class="flex items-start gap-2 mb-2 sm:mb-0 sm:px-2 sm:py-1.5 sm:border-r sm:border-zinc-700">
+                <span class="text-xs text-zinc-500 w-8 flex-shrink-0 pt-1.5 sm:hidden">배우</span>
                 <textarea data-index="${index}" data-field="cast"
                   rows="${Math.max(1, Math.ceil(show.cast.length / 3))}"
-                  class="schedule-field cast-textarea w-full px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500 resize-y leading-5 min-h-[2rem]"
+                  class="schedule-field cast-textarea flex-1 w-full px-2 py-1.5 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500 resize-none leading-5"
                 >${show.cast.join(", ")}</textarea>
-              </td>
-              <td class="px-3 py-2 text-center w-16">
-                <button data-index="${index}" class="delete-schedule-btn p-1 hover:bg-red-900/30 rounded transition-colors">
-                  <svg class="w-4 h-4 text-red-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              </div>
+
+              <!-- 삭제 -->
+              <div class="flex justify-end sm:justify-center sm:items-center sm:px-1 sm:py-1.5">
+                <button data-index="${index}" class="delete-schedule-btn flex items-center gap-1 px-2 py-1 hover:bg-red-900/30 rounded transition-colors text-red-400 text-xs">
+                  <svg class="w-4 h-4 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
+                  <span class="sm:hidden">삭제</span>
                 </button>
-              </td>
-            </tr>
+              </div>
+
+            </div>
           `)
           .join("");
 
-        // 렌더링 직후 모든 cast textarea 높이 초기화
         scheduleEditTable.querySelectorAll('.cast-textarea').forEach(autoResizeTextarea);
       }
 
@@ -1838,9 +1791,8 @@
 
       // cast textarea 입력 시 실시간 높이 조절
       scheduleEditTable.addEventListener('input', (e) => {
-        if (e.target.classList.contains('cast-textarea')) {
-          autoResizeTextarea(e.target);
-        }
+        const ta = e.target.closest('.cast-textarea');
+        if (ta) autoResizeTextarea(ta);
       });
 
       scheduleEditTable.addEventListener('click', (e) => {
@@ -1954,13 +1906,13 @@
         newBtn.id = "addMoreScheduleBtn";
         newBtn.className = "mt-16 mb-24 text-center";
         newBtn.innerHTML = `
-          <button onclick="addMoreSchedule()" class="px-8 py-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-500/50 transition-all hover:scale-105 inline-flex items-center gap-4">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-6">
+          <button onclick="addMoreSchedule()" class="px-5 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 text-white font-bold rounded-xl shadow-lg shadow-teal-600/30 hover:shadow-teal-500/50 transition-all hover:scale-105 inline-flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/>
             </svg>
-            <div class="flex flex-col items-center text-center gap-1">
-              <span class="font-bold text-base leading-snug">새로운 스케줄이 올라왔나요?</span>
-              <span class="text-sm font-normal opacity-90">이미지 업로드하기</span>
+            <div class="flex flex-col items-start gap-0.5">
+              <span class="font-bold text-sm sm:text-base leading-snug">새로운 스케줄이 올라왔나요?</span>
+              <span class="text-xs sm:text-sm font-normal opacity-90">이미지 업로드하기</span>
             </div>
           </button>
         `;
@@ -2000,14 +1952,14 @@
           .map(actor => `
             <button
               onclick="selectActor('${actor}')"
-              class="px-4 py-2 rounded-md font-bold transition-all ${
+              class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-md font-bold transition-all text-sm ${
                 selectedActors.includes(actor)
                   ? "bg-teal-500 text-white shadow-lg shadow-teal-500/30"
                   : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700 border border-zinc-700"
               }"
             >
               ${actor}
-              <span class="ml-2 text-xs font-semibold opacity-70">(${actorStats[actor] || 0})</span>
+              <span class="ml-1.5 text-xs font-semibold opacity-70">(${actorStats[actor] || 0})</span>
             </button>
           `)
           .join("");
@@ -2076,11 +2028,11 @@
 
         tableHead.innerHTML = `
           <tr class="bg-teal-800/80 backdrop-blur">
-            <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">날짜</th>
-            <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">요일</th>
-            <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">시간</th>
+            <th class="px-2 py-2 sm:px-4 sm:py-4 text-center font-black text-xs sm:text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">날짜</th>
+            <th class="px-2 py-2 sm:px-4 sm:py-4 text-center font-black text-xs sm:text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">요일</th>
+            <th class="px-2 py-2 sm:px-4 sm:py-4 text-center font-black text-xs sm:text-base tracking-tight border-r border-teal-700/50 whitespace-nowrap">시간</th>
             ${castingData.roles.map(role => `
-              <th class="px-4 py-4 text-center font-black text-base tracking-tight border-r border-teal-700/50 last:border-r-0 whitespace-nowrap">${role}</th>
+              <th class="px-2 py-2 sm:px-4 sm:py-4 text-center font-black text-xs sm:text-base tracking-tight border-r border-teal-700/50 last:border-r-0 whitespace-nowrap">${role}</th>
             `).join("")}
           </tr>
         `;
@@ -2091,26 +2043,26 @@
 
           return `
             <tr class="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors">
-              <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
-                <div class="text-base font-black">${show.date}</div>
+              <td class="px-2 py-2 sm:px-4 sm:py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
+                <div class="text-xs sm:text-base font-black">${show.date}</div>
               </td>
-              <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
-                <div class="text-base font-semibold text-zinc-300">${show.day}</div>
+              <td class="px-2 py-2 sm:px-4 sm:py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
+                <div class="text-xs sm:text-base font-semibold text-zinc-300">${show.day}</div>
               </td>
-              <td class="px-4 py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
-                <div class="text-base font-semibold text-zinc-300">${show.time}</div>
+              <td class="px-2 py-2 sm:px-4 sm:py-4 border-r border-zinc-800 bg-zinc-900/30 whitespace-nowrap text-center">
+                <div class="text-xs sm:text-base font-semibold text-zinc-300">${show.time}</div>
               </td>
               ${paddedCast.map((actor, castIdx) => {
                 const cleanActor = cleanActorName(actor);
                 const isHighlighted = cleanActor && selectedActors.includes(cleanActor);
                 return `
-                  <td class="px-4 py-4 text-center border-r border-zinc-800 last:border-r-0 transition-all table-cell-highlight whitespace-nowrap ${
+                  <td class="px-2 py-2 sm:px-4 sm:py-4 text-center border-r border-zinc-800 last:border-r-0 transition-all table-cell-highlight whitespace-nowrap ${
                     isHighlighted
                       ? "active bg-teal-500/30 font-black text-teal-300 ring-2 ring-inset ring-teal-500/50"
                       : "text-zinc-300 font-semibold"
                   }">
                     ${cleanActor
-                      ? `<button onclick="selectActor('${cleanActor}')" class="hover:text-teal-400 transition-colors w-full">${actor}</button>`
+                      ? `<button onclick="selectActor('${cleanActor}')" class="hover:text-teal-400 transition-colors w-full text-xs sm:text-sm">${actor}</button>`
                       : `<span class="text-zinc-600">—</span>`
                     }
                   </td>
