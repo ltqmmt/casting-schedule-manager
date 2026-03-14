@@ -491,8 +491,6 @@
               </div>
             </div>
 
-
-
           </div>
         </div>
 
@@ -1032,8 +1030,8 @@
        * 텍스트 내용을 직접 줄바꿈으로 분리해 rows를 계산합니다.
        */
       function autoResizeTextarea(el) {
-        const count = el.value ? el.value.split(',').length : 1;
-        el.rows = Math.max(1, Math.ceil(count / 3));
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
       }
 
       function cleanActorName(name) {
@@ -1317,7 +1315,7 @@
       editShowBtn.addEventListener("click", () => {
         if (!currentShowId) return;
         tempCastingData = JSON.parse(JSON.stringify(shows[currentShowId].data));
-        openConfirmSection();
+        openConfirmSection(false);
       });
 
       deleteShowBtn.addEventListener("click", () => {
@@ -1325,20 +1323,28 @@
       });
 
       // ===== confirmSection 열기 =====
-      function openConfirmSection() {
+      function openConfirmSection(isAdditionalSchedule = false) {
+        const confirmGrid = document.querySelector('#confirmSection .grid');
         if (currentUploadedImageData) {
           uploadedImage.src = currentUploadedImageData;
           uploadedImageContainer.classList.remove("hidden");
+          confirmGrid.classList.add("lg:grid-cols-2");
         } else {
           uploadedImageContainer.classList.add("hidden");
+          confirmGrid.classList.remove("lg:grid-cols-2");
         }
 
         // 항상 뒤로가기 버튼 표시
         document.getElementById("confirmBackBtn").classList.remove("hidden");
 
-        showNameEditInput.value = currentShowId && shows[currentShowId]
-          ? shows[currentShowId].name
-          : "";
+        // 추가 스케줄 업로드는 공연명을 비우고, 기존 공연 수정은 공연명을 채움
+        if (isAdditionalSchedule) {
+          showNameEditInput.value = "";
+        } else {
+          showNameEditInput.value = currentShowId && shows[currentShowId]
+            ? shows[currentShowId].name
+            : "";
+        }
         rolesInput.value = tempCastingData.roles.join(", ");
         renderScheduleEditTable();
         showSection('confirm');
@@ -1625,7 +1631,7 @@
       function confirmSavePhase(phase) {
         document.getElementById("savePhaseModal").classList.add("hidden");
         tempCastingData.schedule.forEach(show => { show.phase = phase; });
-        openConfirmSection();
+        openConfirmSection(false);
       }
 
       function cancelSavePhase() {
@@ -1760,8 +1766,9 @@
               <div class="flex items-start gap-2 mb-2 sm:mb-0 sm:px-2 sm:py-1.5 sm:border-r sm:border-zinc-700">
                 <span class="text-xs text-zinc-500 w-8 flex-shrink-0 pt-1.5 sm:hidden">배우</span>
                 <textarea data-index="${index}" data-field="cast"
-                  rows="${Math.max(1, Math.ceil(show.cast.length / 3))}"
-                  class="schedule-field cast-textarea flex-1 w-full px-2 py-1.5 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500 resize-none leading-5"
+                  rows="1"
+                  style="height:auto"
+                  class="schedule-field cast-textarea flex-1 w-full px-2 py-1.5 bg-zinc-800 border border-zinc-700 rounded text-white text-sm focus:outline-none focus:border-teal-500 resize-none leading-5 overflow-hidden"
                 >${show.cast.join(", ")}</textarea>
               </div>
 
@@ -1779,7 +1786,9 @@
           `)
           .join("");
 
-        scheduleEditTable.querySelectorAll('.cast-textarea').forEach(autoResizeTextarea);
+        requestAnimationFrame(() => {
+          scheduleEditTable.querySelectorAll('.cast-textarea').forEach(autoResizeTextarea);
+        });
       }
 
       // scheduleEditTable에 이벤트 위임 (렌더링과 분리)
@@ -2122,7 +2131,7 @@
         };
 
         showSection('home');
-        openConfirmSection();
+        openConfirmSection(false);
       }
 
       function cancelSave() { saveModal.classList.add("hidden"); }
